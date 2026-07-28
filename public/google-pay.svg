@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 52" fill="none">
+  <path d="M14 6h9.5a2 2 0 0 1 2 2v9.5H14V6Zm-8 8v9.5a2 2 0 0 0 2 2h9.5V14H6Zm8 22h9.5v-9.5H6a2 2 0 0 0 2 2v5.5a2 2 0 0 0 2 2h4Zm11.5-11.5h9.5a2 2 0 0 1-2 2h-5.5a2 2 0 0 1-2-2Z" fill="#117ACA"/>
+  <rect x="6" y="6" width="20" height="20" rx="2" fill="#117ACA"/>
+  <rect x="8" y="8" width="16" height="16" rx="1" fill="#FFFFFF"/>
+  <rect x="11" y="11" width="10" height="10" fill="#117ACA"/>
+  <text x="40" y="35" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="28" fill="#117ACA">CHASE</text>
+</svg>
