@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { Search, MapPin, Home as HomeIcon, Sparkles, Star, ShieldCheck, Building } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState('')
   const [location, setLocation] = useState('')
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -16,9 +16,13 @@ export default function Hero() {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, type: "spring", bounce: 0.3 } }
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { duration: 0.8, type: "spring" as const, bounce: 0.3 } 
+    }
   }
 
   return (

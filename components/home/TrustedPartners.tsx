@@ -1,13 +1,13 @@
 'use client'
 
 import { ShieldCheck } from "lucide-react"
+import { motion } from "framer-motion"
 
 type Partner = {
   name: string
   src: string
 }
 
-// প্রথম সারির লোগোগুলো
 const rowOnePartners: Partner[] = [
   { name: "Visa", src: "/logos/visa (1).svg" },
   { name: "Mastercard", src: "/logos/mastercard (1).svg" },
@@ -19,7 +19,6 @@ const rowOnePartners: Partner[] = [
   { name: "HSBC", src: "/logos/hsbc (1).svg" },
 ]
 
-// দ্বিতীয় সারির লোগোগুলো (ভিন্ন অর্ডারে সাজানো)
 const rowTwoPartners: Partner[] = [
   { name: "Apple Pay", src: "/logos/apple-pay (1).svg" },
   { name: "Google Pay", src: "/logos/google-pay (1).svg" },
@@ -33,13 +32,15 @@ const rowTwoPartners: Partner[] = [
 
 function LogoCard({ partner }: { partner: Partner }) {
   return (
-    <div className="flex shrink-0 items-center justify-center px-3">
-      <div className="flex items-center justify-center w-36 h-20 sm:w-44 sm:h-22 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all duration-300 p-4">
+    <div className="flex shrink-0 items-center justify-center px-3.5">
+      {/* কার্ডের ব্যাকগ্রাউন্ড: লাইট মোডে সলিড সাদা এবং ডার্ক মোডে হিরো সেকশনের গ্লাস ইফেক্ট */}
+      <div className="flex items-center justify-center w-36 h-20 sm:w-44 sm:h-24 bg-white dark:bg-[#0b1120]/80 border border-slate-200/60 dark:border-white/5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_25px_rgba(245,158,11,0.12)] hover:border-amber-500/40 dark:hover:border-amber-500/30 transition-all duration-500 p-4 backdrop-blur-md group/card">
         <img
           src={partner.src}
           alt={`${partner.name} logo`}
           loading="lazy"
-          className="max-h-8 sm:max-h-10 w-auto object-contain transition-transform duration-300 hover:scale-105"
+          // গ্রেস্কেল ইফেক্ট সরিয়ে দেওয়া হয়েছে, এখন লোগোর আসল কালার সবসময় দেখা যাবে
+          className="max-h-8 sm:max-h-10 w-auto object-contain transition-transform duration-500 group-hover/card:scale-110"
           onError={(e) => {
             e.currentTarget.src = 'https://via.placeholder.com/120x40/e2e8f0/1e293b?text=' + partner.name
           }}
@@ -53,8 +54,20 @@ export default function TrustedPartners() {
   return (
     <section
       aria-labelledby="trusted-partners-heading"
-      className="w-full bg-slate-50 dark:bg-slate-950 py-20 overflow-hidden border-y border-slate-200/60 dark:border-slate-800/60 transition-colors duration-300"
+      // ডার্ক মোডের ব্যাকগ্রাউন্ড হিরো সেকশনের সাথে হুবহু মিল রাখা হয়েছে
+      className="w-full bg-slate-50 dark:bg-[#030712] py-24 overflow-hidden transition-colors duration-300 relative"
     >
+      {/* ================= HERO SECTION-ER MOTON BACKGROUND EFFECTS ================= */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Subtle Grid (হিরো সেকশনের মতো) */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f59e0b08_1px,transparent_1px),linear-gradient(to_bottom,#f59e0b08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_70%,transparent_110%)]"></div>
+      </div>
+
+      {/* Background Subtle Glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+        <div className="w-[500px] h-[250px] bg-amber-500/10 dark:bg-amber-500/5 rounded-full blur-[120px]"></div>
+      </div>
+
       <style jsx>{`
         @keyframes scroll-rtl {
           0% { transform: translateX(0); }
@@ -65,54 +78,74 @@ export default function TrustedPartners() {
           100% { transform: translateX(0); }
         }
         .animate-marquee-rtl {
-          animation: scroll-rtl 35s linear infinite;
+          animation: scroll-rtl 40s linear infinite;
         }
         .animate-marquee-ltr {
-          animation: scroll-ltr 35s linear infinite;
+          animation: scroll-ltr 40s linear infinite;
         }
         .animate-marquee-rtl:hover,
         .animate-marquee-ltr:hover {
           animation-play-state: paused;
         }
         .mask-edges {
-          mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-          -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
       `}</style>
 
-      {/* সেকশনের হেডার অংশ */}
-      <div className="mx-auto max-w-6xl px-6 mb-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+      {/* Header Section */}
+      <div className="mx-auto max-w-4xl px-6 mb-14 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, type: "spring" as const, bounce: 0.3 }}
+          className="flex flex-col items-center gap-4 text-center"
+        >
+          {/* Badge */}
+          <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 backdrop-blur-md shadow-sm tracking-wide uppercase">
             <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-            Secure &amp; Certified Gateways
+            <span>Secure &amp; Certified Gateways</span>
           </span>
+
+          {/* Title */}
           <h2
             id="trusted-partners-heading"
-            className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white"
+            className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2]"
           >
-            Trusted Payment Partners &amp; Banks
+            Trusted Payment Partners <br className="hidden sm:block" />
+            <span className="relative whitespace-nowrap inline-block mt-1">
+              <span className="absolute -inset-1 block -skew-y-3 bg-amber-500/20 dark:bg-amber-500/20 blur-lg"></span>
+              <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 dark:from-amber-300 dark:via-amber-400 dark:to-amber-500">
+                &amp; Global Banks
+              </span>
+            </span>
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md">
+
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-lg font-medium mt-1">
             Experience seamless and secure transactions backed by world-class financial institutions.
           </p>
-        </div>
+        </motion.div>
       </div>
 
-      {/* ফুল-উইথ ডুয়েল রো মারিকুই কন্টেইনার */}
-      <div className="relative w-full mask-edges overflow-hidden flex flex-col gap-6 py-2">
-        
-        {/* প্রথম সারি: ডান থেকে বামে (RTL) */}
+      {/* Marquee Container */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, delay: 0.1 }}
+        className="relative w-full mask-edges overflow-hidden flex flex-col gap-5 py-2 z-10"
+      >
+        {/* Row 1 (RTL) */}
         <div className="w-full overflow-hidden">
           <div className="animate-marquee-rtl flex w-max flex-nowrap items-center">
-            {/* ৩ বার রেন্ডার করা হয়েছে যাতে যেকোনো বড় ডিসপ্লেতে ফুল উইথ কভার করে */}
             {[...rowOnePartners, ...rowOnePartners, ...rowOnePartners].map((partner, index) => (
               <LogoCard key={`r1-${index}`} partner={partner} />
             ))}
           </div>
         </div>
 
-        {/* দ্বিতীয় সারি: বাম থেকে ডানে (LTR) */}
+        {/* Row 2 (LTR) */}
         <div className="w-full overflow-hidden">
           <div className="animate-marquee-ltr flex w-max flex-nowrap items-center">
             {[...rowTwoPartners, ...rowTwoPartners, ...rowTwoPartners].map((partner, index) => (
@@ -120,8 +153,7 @@ export default function TrustedPartners() {
             ))}
           </div>
         </div>
-
-      </div>
+      </motion.div>
     </section>
   )
 }
