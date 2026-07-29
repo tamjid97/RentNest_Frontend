@@ -1,0 +1,34 @@
+"use server"
+
+import { cookies } from "next/headers"
+
+export const getMe = async () => {
+
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("accessToken")?.value || null;
+
+  if (!accessToken) {
+    return {
+      success: false,
+      message: "user not logged!"
+    }
+  }
+
+
+  const res = await fetch("https://rent-nest-nu-hazel.vercel.app/api/auth/me", {
+    headers: {
+      cookie: `accessToken=${accessToken}`
+    },
+    
+      cache : "force-cache",
+        next : {
+            revalidate : 60 * 60 * 24, 
+            tags : ["my-profile"]
+        }
+  });
+
+  const result = await res.json();
+
+  return result;
+}

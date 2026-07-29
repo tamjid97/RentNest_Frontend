@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { 
   Eye, EyeOff, Mail, 
-  Home, Shield, Lock, Sparkles 
+  Home, Lock, Sparkles, 
+  Loader2
 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
@@ -11,6 +12,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { loginAction } from "../_action/loginAction";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -30,12 +33,18 @@ const itemVariants: Variants = {
 };
 
 export default function LoginForm() {
+  const [state, action, pending] = useActionState(loginAction, null);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle your login submission logic here
-  };
+  useEffect(() => {
+    if (!state) return;
+
+    if (state.success === false) {
+      toast.error(state.message || "Login failed");
+    } else if (state.success === true) {
+      toast.success("Welcome back to RentNest!");
+    }
+  }, [state]);
 
   return (
     <div className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden p-4 md:p-8 bg-slate-50 dark:bg-[#030712] transition-colors duration-300">
@@ -80,8 +89,7 @@ export default function LoginForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 pt-2">
-            
+          <form action={action} className="p-8 pt-2">
             <motion.div
               variants={containerVariants}
               initial="hidden"
@@ -112,7 +120,6 @@ export default function LoginForm() {
                   <Label htmlFor="password" className="text-slate-700 dark:text-slate-300 font-semibold text-xs uppercase tracking-wider">
                     Password
                   </Label>
-                  
                 </div>
                 <div className="relative group">
                   <Lock className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-amber-500" />
@@ -143,15 +150,31 @@ export default function LoginForm() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-[1.01] transition-all duration-300 active:scale-95 cursor-pointer"
+                  disabled={pending}
                 >
-                  Login to Account
+                  {pending ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                <span className="flex items-center justify-center text-base">
+                  Login to RentNest
+                  <motion.span
+                    className="ml-2 inline-block opacity-0 transition-opacity group-hover:opacity-100"
+                    initial={{ x: -10 }}
+                    animate={{ x: 0 }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              )}
                 </Button>
               </motion.div>
 
             </motion.div>
 
             <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs text-slate-500 dark:text-slate-400">
-              
               <p className="text-center font-medium">
                 Don&apos;t have an account?{" "}
                 <Link href="/register" className="font-extrabold text-amber-600 dark:text-amber-400 hover:underline">

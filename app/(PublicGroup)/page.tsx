@@ -7,8 +7,7 @@ import HowItWorks from '@/components/home/HowItWorks'
 import WhyChooseUs from '@/components/home/WhyChooseUs'
 import Testimonials from '@/components/home/Testimonials'
 import LandlordCTA from '@/components/home/LandlordCTA'
-import { Navbar } from '@/components/shared/navbar'
-import { Footer } from '@/components/shared/footer'
+
 
 
 export default async function Home() {
@@ -18,7 +17,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 transition-colors duration-300">
-      <Navbar /> 
+      
       <main>
         <Hero />
         <TrustedPartners />
@@ -29,7 +28,7 @@ export default async function Home() {
         <Testimonials />
         <LandlordCTA />
       </main>
-      <Footer />
+      
     </div>
   )
 }

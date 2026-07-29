@@ -24,10 +24,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
+import type { NavbarProps } from '@/lib/type'
+import { logout } from '../service/logout'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation' // 'next/router' এর বদলে 'next/navigation' হবে
+import { Button } from '../ui/button'
 
-// UserDropdown কম্পোনেন্ট Navbar-এর বাইরে রাখা হয়েছে
-function UserDropdown() {
-  return (
+// UserDropdown কম্পোনেন্ট Navbar-এর বাইরে রাখা হয়েছে
+function UserDropdown({ user }: NavbarProps) {
+  const router = useRouter()
+  const handleUserMenuAction = async (action: string) => {
+
+    if(action === "logout"){
+        await logout();
+        toast.success("User Logged Out Successfully!");
+        router.push("/login");
+    }
+  };
+
+
+  // return এর ভেতরের সিনট্যাক্স এরর ঠিক করা হয়েছে এবং user?.success দেওয়া হয়েছে
+  return user?.success ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
@@ -41,7 +58,8 @@ function UserDropdown() {
             <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors">
               Account
             </span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400">Tenant</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">
+              {user?.data?.profile?.role}</span>
           </div>
         </button>
       </DropdownMenuTrigger>
@@ -67,16 +85,20 @@ function UserDropdown() {
 
         <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800" />
 
-        <DropdownMenuItem className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-500 dark:text-rose-400 cursor-pointer transition-colors hover:bg-rose-50 dark:hover:bg-rose-500/10">
+        <DropdownMenuItem onClick={async() => {
+          await handleUserMenuAction("logout")
+        }} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-500 dark:text-rose-400 cursor-pointer transition-colors hover:bg-rose-50 dark:hover:bg-rose-500/10">
           <LogOut className="h-4 w-4" />
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  ) : (
+    <Link href="/login"><Button>login</Button></Link> 
   )
 }
 
-export function Navbar() {
+export function Navbar({ user }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
 
@@ -130,7 +152,6 @@ export function Navbar() {
 
           {/* --- Right Actions (Desktop) --- */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Light/Dark Theme Toggle (Pure Tailwind CSS based, No useEffect needed) */}
             <button 
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400 transition-all duration-300 hover:border-amber-400 hover:scale-105 shadow-sm"
@@ -140,8 +161,8 @@ export function Navbar() {
               <Moon className="h-5 w-5 block dark:hidden text-slate-700" />
             </button>
 
-            {/* Profile Dropdown */}
-            <UserDropdown />
+            {/* Profile Dropdown with user prop */}
+            <UserDropdown user={user} />
           </div>
 
           {/* --- Mobile Actions (Toggle, Profile, Menu) --- */}
@@ -154,8 +175,8 @@ export function Navbar() {
               <Moon className="h-4 w-4 block dark:hidden text-slate-700" />
             </button>
             
-            {/* Mobile Profile Avatar */}
-            <UserDropdown />
+            {/* Mobile Profile Avatar with user prop */}
+            <UserDropdown user={user} />
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

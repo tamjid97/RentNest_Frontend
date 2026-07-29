@@ -1,17 +1,30 @@
-// lib/type.ts
-import { LucideIcon } from "lucide-react";
+import type { LucideProps } from "lucide-react";
+import type { ForwardRefExoticComponent, RefAttributes } from "react";
 
-export interface ISidebarItem {
-  label: string;
-  href: string;
-  icon: LucideIcon;
+export type ISidebarItem = {
+    label: string,
+    href: string,
+    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
 }
 
-export interface NavbarProps {
-  user?: {
-    data?: {
-      role?: string;
-      name?: string;
+export type IUser = {
+  success: boolean;
+  statusCode?: number;
+  message: string;
+  data: {
+    profile: {
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      profilePhoto?: string | null;
+      activeStatus?: string;
+      createdAt?: string;
+      updatedAt?: string;
     };
   };
+};
+
+export interface NavbarProps {
+  user?: IUser;
 }
