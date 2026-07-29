@@ -11,11 +11,14 @@ import { Navbar } from '@/components/shared/navbar'
 import { Footer } from '@/components/shared/footer'
 
 
+export default async function Home() {
+  
 
-export default function Home() {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 transition-colors duration-300">
-       <Navbar /> 
+      <Navbar /> 
       <main>
         <Hero />
         <TrustedPartners />
@@ -26,7 +29,7 @@ export default function Home() {
         <Testimonials />
         <LandlordCTA />
       </main>
-       <Footer />
+      <Footer />
     </div>
   )
 }

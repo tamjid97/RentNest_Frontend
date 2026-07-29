@@ -150,11 +150,8 @@ export default function LoginForm() {
 
             </motion.div>
 
-            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1.5 font-medium">
-                <Shield className="h-4 w-4 text-amber-500" />
-                Secure Login
-              </span>
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs text-slate-500 dark:text-slate-400">
+              
               <p className="text-center font-medium">
                 Don&apos;t have an account?{" "}
                 <Link href="/register" className="font-extrabold text-amber-600 dark:text-amber-400 hover:underline">
