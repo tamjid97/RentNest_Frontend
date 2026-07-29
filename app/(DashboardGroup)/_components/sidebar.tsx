@@ -15,32 +15,25 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-
-// 📌 Importing Types & Configs
 import type { ISidebarItem, NavbarProps } from "@/lib/type"
 import { sidebarMenuItems } from "../_config/sidebarManuitems"
 
 
-interface SidebarContentProps {
+
+interface SidebarContentProps extends NavbarProps {
   pathname: string;
-  user: NavbarProps["user"];
   setOpen?: (open: boolean) => void;
 }
 
-function SidebarContent({ pathname, user, setOpen }: SidebarContentProps) {
-  let role = user?.data?.role?.toUpperCase() || "TENANT";
+export default function SidebarContent({ user, pathname, setOpen }: SidebarContentProps) {
+  let navItems: ISidebarItem[] = [];
 
-  // যদি রোল "USER" বা অন্য কিছু হয়, তবে সেটিকে ডিফল্ট "TENANT"-এ ম্যাপ করে নিন
-  if (role === "USER") {
-    role = "TENANT";
-  }
-
-  let navItems: ISidebarItem[] = sidebarMenuItems.TENANT; // ডিফল্ট ফলব্যাক
-
+const role =user?.data?.profile?.role;
+console.log("Current User Role:", role);
   if (role === "TENANT") {
     navItems = sidebarMenuItems.TENANT;
   } else if (role === "LANDLORD") {
-    navItems = sidebarMenuItems.LANDLORD; // এখানে টাইপো ঠিক করা হয়েছে (navitems -> navItems)
+    navItems = sidebarMenuItems.LANDLORD;
   } else if (role === "ADMIN") {
     navItems = sidebarMenuItems.ADMIN;
   }
@@ -73,7 +66,7 @@ function SidebarContent({ pathname, user, setOpen }: SidebarContentProps) {
         {/* 🌟 Dynamic Navigation Links */}
         <div className="py-5 px-3">
           <div className="px-3 mb-2 text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-            {role} MENU
+            {role ? `${role} MENU` : "MENU"}
           </div>
           <nav className="grid gap-1.5">
             {navItems.map((item) => {

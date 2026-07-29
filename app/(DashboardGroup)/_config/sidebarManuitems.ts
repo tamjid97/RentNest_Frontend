@@ -12,29 +12,34 @@ import {
   Shield,
 } from "lucide-react";
 
-export const TENANT_SIDEBAR_ITEMS: ISidebarItem[] = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Saved Properties", href: "/dashboard/saved", icon: Heart },
-  { label: "My Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
-  { label: "Account Settings", href: "/dashboard/settings", icon: Settings },
+export const TENANT_SIDEBAR_ITEMS : ISidebarItem[] = [
+  { label: "Overview", href: "/tenant", icon: LayoutDashboard },
+  { label: "Saved Properties", href: "/tenant/saved", icon: Heart },
+  { label: "My Inquiries", href: "/tenant/inquiries", icon: MessageSquare },
+  { label: "Account Settings", href: "/tenant/settings", icon: Settings },
 ];
 
-export const LANDLORD_SIDEBAR_ITEMS: ISidebarItem[] = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "My Properties", href: "/dashboard/properties", icon: Building2 },
-  { label: "Add Property", href: "/dashboard/add-property", icon: PlusCircle },
-  { label: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+export const LANDLORD_SIDEBAR_ITEMS : ISidebarItem[] = [
+  { label: "Overview", href: "/landlord", icon: LayoutDashboard },
+  { label: "My Properties", href: "/landlord/properties", icon: Building2 },
+  { label: "Add Property", href: "/landlord/add-property", icon: PlusCircle },
+  { label: "Inquiries", href: "/landlord/inquiries", icon: MessageSquare },
+  { label: "Settings", href: "/landlord/settings", icon: Settings },
 ];
 
-export const ADMIN_SIDEBAR_ITEMS: ISidebarItem[] = [
-  { label: "Admin Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "All Properties", href: "/dashboard/all-properties", icon: Building2 },
-  { label: "Manage Users", href: "/dashboard/users", icon: Users },
-  { label: "Approvals", href: "/dashboard/approvals", icon: Shield },
-  { label: "Reports & Logs", href: "/dashboard/reports", icon: FileText },
-  { label: "System Settings", href: "/dashboard/settings", icon: Settings },
+export const ADMIN_SIDEBAR_ITEMS : ISidebarItem[] = [
+  { label: "Admin Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "All Properties", href: "/admin/all-properties", icon: Building2 },
+  { label: "Manage Users", href: "/admin/users", icon: Users },
+  { label: "Approvals", href: "/admin/approvals", icon: Shield },
+  { label: "Reports & Logs", href: "/admin/reports", icon: FileText },
+  { label: "System Settings", href: "/admin/settings", icon: Settings },
 ];
+
+
+
+
+
 
 export const sidebarMenuItems = {
   TENANT: TENANT_SIDEBAR_ITEMS,

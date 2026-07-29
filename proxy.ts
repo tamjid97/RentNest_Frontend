@@ -9,7 +9,7 @@ import { getNewAccessToken } from "./components/service/refreshToken";
 
 const AUTH_ROUTES = ["/login", "/register"];
 
-const PUBLIC_ROUTES = ["/", "/news"]
+const PUBLIC_ROUTES = ["/"]
 
 
 export async function proxy(request: NextRequest) {
@@ -57,14 +57,15 @@ export async function proxy(request: NextRequest) {
         userRole = (decodedAccessToken.data as JwtPayload).role;
     }
 
+    
 
     if(accessToken && AUTH_ROUTES.includes(pathname)){
-        if(userRole === "USER"){
-            return NextResponse.redirect(new URL('/dashboard', request.url));
+        if(userRole === "TENANT"){
+            return NextResponse.redirect(new URL('/tenant', request.url));
+        }else if(userRole === "LANDLORD"){
+            return NextResponse.redirect(new URL('/landlord', request.url));
         }else if(userRole === "ADMIN"){
-            return NextResponse.redirect(new URL('/admin-dashboard', request.url));
-        }else if(userRole === "AUTHOR"){
-            return NextResponse.redirect(new URL('/author-dashboard', request.url));
+            return NextResponse.redirect(new URL('/admin', request.url));
         }else{
             return NextResponse.redirect(new URL('/', request.url));
         }
@@ -79,11 +80,12 @@ export async function proxy(request: NextRequest) {
     }
 
 
-    if(pathname.startsWith("/dashboard") && userRole !== "USER"){
+
+    if(pathname.startsWith("/tenant") && userRole !== "TENANT"){
         return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN"){
+    }else if(pathname.startsWith("/landlord") && userRole !== "LANDLORD"){
         return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/author-dashboard") && userRole !== "AUTHOR"){
+    }else if(pathname.startsWith("/admin") && userRole !== "ADMIN"){
         return NextResponse.redirect(new URL('/not-found', request.url));
     }
 
