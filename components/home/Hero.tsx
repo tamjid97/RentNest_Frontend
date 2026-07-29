@@ -26,7 +26,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative w-full min-h-[95vh] flex flex-col justify-center overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 bg-slate-50 dark:bg-[#030712]">
+    <section className="relative w-full min-h-[95vh] flex flex-col justify-center overflow-hidden pt-4 pb-2 md:pt-12 md:pb-4 bg-slate-50 dark:bg-[#030712]">
       
       {/* ================= ULTRA PREMIUM BACKGROUND EFFECTS ================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

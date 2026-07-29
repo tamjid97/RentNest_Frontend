@@ -52,7 +52,7 @@ const itemVariants: Variants = {
 
 export default function Categories() {
   return (
-    <section className="relative w-full bg-slate-50 dark:bg-[#030712] py-24 overflow-hidden transition-colors duration-300">
+    <section className="relative w-full bg-slate-50 dark:bg-[#030712] py-14 overflow-hidden transition-colors duration-300">
       
       {/* ================= BACKGROUND EFFECTS ================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -80,8 +80,8 @@ export default function Categories() {
           
           {/* Premium Gradient Title */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2]">
-            Explore Our <br className="hidden sm:block" />
-            <span className="relative inline-block mt-1">
+            Explore Our 
+            <span className="relative inline-block mt-1 ml-4">
               <span className="absolute -inset-1 block -skew-y-3 bg-amber-500/20 dark:bg-amber-500/20 blur-lg"></span>
               <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 dark:from-amber-300 dark:via-amber-400 dark:to-amber-500">
                 Top Categories
