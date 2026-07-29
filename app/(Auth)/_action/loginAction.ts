@@ -53,12 +53,12 @@ export const loginAction = async (prevState : LoginState, fromData : FormData)=>
 
     const decodedToken = jwt.decode(result.data.accessToken) as JwtPayload;
 
-if (decodedToken.role === "USER" || decodedToken.role === "STUDENT") {
-    redirect("/user_dashboard"); 
+if (decodedToken.role === "TENANT") {
+    redirect("/tenant"); 
+} else if (decodedToken.role === "LANDLORD") {
+    redirect("/landlord"); 
 } else if (decodedToken.role === "ADMIN") {
-    redirect("/admin_dashbord"); 
-} else if (decodedToken.role === "MODERATOR") {
-    redirect("/moderator_dashbord");
+    redirect("/admin");
 }
 }
 
