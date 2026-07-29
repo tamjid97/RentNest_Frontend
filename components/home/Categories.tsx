@@ -111,8 +111,8 @@ export default function Categories() {
                   {/* Subtle Top Gradient Overlay on Hover */}
                   <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
 
-                  {/* Main Icon Box */}
-                  <div className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-slate-800/80 group-hover:bg-amber-500 flex items-center justify-center text-slate-700 dark:text-slate-300 group-hover:text-white transition-all duration-500 shadow-sm mb-6">
+                  {/* Main Icon Box (Updated with Dark Mode Hover States) */}
+                  <div className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-slate-800/80 group-hover:bg-amber-500 dark:group-hover:bg-amber-400 flex items-center justify-center text-slate-700 dark:text-slate-300 group-hover:text-white dark:group-hover:text-slate-950 transition-all duration-500 shadow-sm mb-6">
                     <Icon className="h-8 w-8" strokeWidth={1.5} />
                   </div>
                   

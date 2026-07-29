@@ -2,31 +2,45 @@
 
 import Link from 'next/link'
 import { Home, Mail, Send, Shield, Sparkles, ArrowRight, Globe, Code, Share2, MessageSquare } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative border-t border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 overflow-hidden transition-colors duration-300">
+    <footer className="relative border-t border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#030712] text-slate-600 dark:text-slate-400 overflow-hidden transition-colors duration-300">
       
-      {/* Background Accent Gradient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-3/4 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
-      <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 h-40 w-[600px] bg-amber-500/5 blur-[120px] pointer-events-none"></div>
+      {/* Background Ambient Effects & Grids */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f59e0b05_1px,transparent_1px),linear-gradient(to_bottom,#f59e0b05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_100%,#000_70%,transparent_100%)]"></div>
+      </div>
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[300px] w-[800px] bg-amber-500/5 dark:bg-amber-500/[0.04] rounded-full blur-[140px] pointer-events-none"></div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-12 relative z-10">
         
         {/* --- Top Newsletter Section --- */}
-        <div className="mb-16 rounded-3xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 p-8 md:p-12 shadow-2xl relative overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
+          className="mb-20 rounded-[2.5rem] border border-amber-500/30 dark:border-amber-500/20 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-2xl p-8 md:p-12 shadow-[0_20px_50px_rgba(245,158,11,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden"
+        >
+          <div className="absolute -right-20 -top-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative z-10">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 mb-4">
-                <Sparkles className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 mb-4 backdrop-blur-md uppercase tracking-wide shadow-sm">
+                <Sparkles className="h-4 w-4" />
                 <span>Stay Ahead</span>
-              </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                Subscribe for exclusive rental deals & updates
+              </span>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+                Subscribe for exclusive rental{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 dark:from-amber-300 dark:via-amber-400 dark:to-amber-500">
+                  deals & updates
+                </span>
               </h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400 font-medium">
                 Join 10,000+ tenants and landlords getting the best marketplace insights.
               </p>
             </div>
@@ -35,46 +49,60 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className="flex-1 rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/80 px-4 py-3.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-amber-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all"
+                className="flex-1 rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 px-5 py-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-amber-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all shadow-sm"
                 required
               />
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 px-6 py-3.5 text-sm font-bold text-slate-950 hover:bg-amber-400 transition-all duration-300 shadow-lg shadow-amber-500/20 active:scale-95"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 px-7 py-4 text-sm font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-[1.02] transition-all duration-300 active:scale-95"
               >
                 <span>Subscribe</span>
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4 stroke-[2.5]" />
               </button>
             </form>
           </div>
-        </div>
+        </motion.div>
 
         {/* --- Main Links Grid --- */}
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-5 mb-16">
-          
-          {/* Brand Info */}
-          <div className="md:col-span-2 flex flex-col gap-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 shadow-md">
-                <Home className="h-5 w-5 text-slate-950 stroke-[2.5]" />
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="grid grid-cols-1 gap-10 md:grid-cols-5 mb-16"
+        >
+          {/* Brand Info with Navbar Matched Logo */}
+          <div className="md:col-span-2 flex flex-col gap-5">
+            <Link href="/" className="group flex items-center gap-3 transition-transform duration-300 hover:scale-[1.02] w-fit">
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all duration-300">
+                <Home className="h-6 w-6 text-slate-950 stroke-[2.5]" />
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-400"></span>
+                </span>
               </div>
-              <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                Rent<span className="text-amber-500 dark:text-amber-400">Nest</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">
+                  Rent<span className="text-amber-500 dark:text-amber-400">Nest</span>
+                </span>
+                <span className="text-[10px] font-medium tracking-widest text-slate-500 dark:text-slate-400 uppercase mt-0.5">
+                  Marketplace
+                </span>
+              </div>
             </Link>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
               The premier luxury rental property marketplace. Empowering landlords and tenants through smart, transparent, and seamless property management.
             </p>
-            <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400/90 bg-amber-500/10 border border-amber-500/20 w-fit px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 w-fit px-3.5 py-1.5 rounded-full shadow-sm">
               <Shield className="h-3.5 w-3.5" />
               <span>100% Verified Property Listings</span>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4">Platform</h4>
-            <ul className="space-y-3 text-sm">
+          <div className="space-y-4">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-900 dark:text-white">Platform</h4>
+            <ul className="space-y-3 text-sm font-medium">
               <li><Link href="/" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Home Marketplace</Link></li>
               <li><Link href="/properties" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Browse Homes</Link></li>
               <li><Link href="/how-it-works" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">How it Works</Link></li>
@@ -83,9 +111,9 @@ export function Footer() {
           </div>
 
           {/* Company */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4">Company</h4>
-            <ul className="space-y-3 text-sm">
+          <div className="space-y-4">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-900 dark:text-white">Company</h4>
+            <ul className="space-y-3 text-sm font-medium">
               <li><Link href="/about" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">About Us</Link></li>
               <li><Link href="/contact" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Contact Support</Link></li>
               <li><Link href="/careers" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Careers</Link></li>
@@ -94,21 +122,20 @@ export function Footer() {
           </div>
 
           {/* Legal */}
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-4">Legal & Trust</h4>
-            <ul className="space-y-3 text-sm">
+          <div className="space-y-4">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-900 dark:text-white">Legal & Trust</h4>
+            <ul className="space-y-3 text-sm font-medium">
               <li><Link href="/privacy" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Terms of Service</Link></li>
               <li><Link href="/cookies" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Cookie Settings</Link></li>
               <li><Link href="/security" className="hover:text-amber-500 dark:hover:text-amber-400 transition-colors">Trust & Security</Link></li>
             </ul>
           </div>
-
-        </div>
+        </motion.div>
 
         {/* --- Bottom Copyright & Socials --- */}
         <div className="border-t border-slate-200 dark:border-slate-800/80 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             &copy; {currentYear} RentNest Inc. All rights reserved. Built with Next.js & Tailwind CSS.
           </p>
 
@@ -126,7 +153,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-amber-500 dark:hover:border-amber-400 hover:bg-amber-500 hover:text-slate-950 transition-all duration-300"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-amber-500 dark:hover:border-amber-400 hover:bg-amber-500 hover:text-slate-950 shadow-sm transition-all duration-300 hover:scale-105"
                 >
                   <SocialIcon className="h-4 w-4" />
                 </a>
