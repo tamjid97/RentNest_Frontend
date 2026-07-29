@@ -20,6 +20,7 @@ import {
 import type { ISidebarItem, NavbarProps } from "@/lib/type"
 import { sidebarMenuItems } from "../_config/sidebarManuitems"
 
+
 interface SidebarContentProps {
   pathname: string;
   user: NavbarProps["user"];
@@ -27,14 +28,19 @@ interface SidebarContentProps {
 }
 
 function SidebarContent({ pathname, user, setOpen }: SidebarContentProps) {
-  let navItems: ISidebarItem[] = [];
+  let role = user?.data?.role?.toUpperCase() || "TENANT";
 
-  const role = user?.data?.role?.toUpperCase() || "USER";
-
+  // যদি রোল "USER" বা অন্য কিছু হয়, তবে সেটিকে ডিফল্ট "TENANT"-এ ম্যাপ করে নিন
   if (role === "USER") {
-    navItems = sidebarMenuItems.USER;
-  } else if (role === "MODERATOR") {
-    navItems = sidebarMenuItems.MODERATOR;
+    role = "TENANT";
+  }
+
+  let navItems: ISidebarItem[] = sidebarMenuItems.TENANT; // ডিফল্ট ফলব্যাক
+
+  if (role === "TENANT") {
+    navItems = sidebarMenuItems.TENANT;
+  } else if (role === "LANDLORD") {
+    navItems = sidebarMenuItems.LANDLORD; // এখানে টাইপো ঠিক করা হয়েছে (navitems -> navItems)
   } else if (role === "ADMIN") {
     navItems = sidebarMenuItems.ADMIN;
   }
