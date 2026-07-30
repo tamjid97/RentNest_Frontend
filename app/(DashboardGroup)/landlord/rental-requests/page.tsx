@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useTransition } from "react";
 import {
   ClipboardList,
   Sparkles,
@@ -7,78 +9,103 @@ import {
   XCircle,
   Clock,
   Calendar,
-  Building2,
   Mail,
   Phone,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { 
+  getLandlordRentalRequestsAction, 
+  updateRentalRequestStatusAction 
+} from "../_action/rentalAction";
 
-// 🌟 Dummy Data for Landlord's Rental Requests
-const LANDLORD_RENTAL_REQUESTS = [
-  {
-    id: "REQ-9001",
-    tenant: {
-      name: "Anik Rahman",
-      email: "anik.rahman@gmail.com",
-      phone: "+880 1712-345678",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop",
-    },
-    property: {
-      title: "Modern Apartment",
-      location: "Borishal, Bangladesh",
-      rent: "৳10,000/mo",
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&auto=format&fit=crop",
-    },
-    moveInDate: "15 Aug, 2026",
-    duration: "12 Months",
-    status: "PENDING",
-    createdAt: "2 hours ago",
-  },
-  {
-    id: "REQ-9002",
-    tenant: {
-      name: "Sumi Akter",
-      email: "sumi.akter@gmail.com",
-      phone: "+880 1819-876543",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop",
-    },
-    property: {
-      title: "Luxury Duplex Family Home",
-      location: "Gulshan, Dhaka",
-      rent: "৳45,000/mo",
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=400&auto=format&fit=crop",
-    },
-    moveInDate: "01 Sep, 2026",
-    duration: "6 Months",
-    status: "APPROVED",
-    createdAt: "1 day ago",
-  },
-  {
-    id: "REQ-9003",
-    tenant: {
-      name: "Tanvir Hossain",
-      email: "tanvir.h@gmail.com",
-      phone: "+880 1911-223344",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&auto=format&fit=crop",
-    },
-    property: {
-      title: "Modern Apartment",
-      location: "Borishal, Bangladesh",
-      rent: "৳10,000/mo",
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=400&auto=format&fit=crop",
-    },
-    moveInDate: "10 Aug, 2026",
-    duration: "12 Months",
-    status: "REJECTED",
-    createdAt: "3 days ago",
-  },
-];
+// 🌟 প্রপার টাইপ ডিফিনিশন (any টাইপ এড়াতে)
+export interface Tenant {
+  name: string;
+  email: string;
+  phone: string;
+  avatar?: string;
+}
+
+export interface Property {
+  title: string;
+  location: string;
+  image?: string;
+  rent: string;
+}
+
+export interface RentalRequest {
+  id: string;
+  tenant: Tenant;
+  property: Property;
+  moveInDate: string;
+  duration: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+}
 
 export default function LandlordRentalRequestsPage() {
+  const [requests, setRequests] = useState<RentalRequest[]>([]);
+  const [isLoadingList, setIsLoadingList] = useState(true);
+  const [activeTab, setActiveTab] = useState("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  // পেজ লোড হওয়ার সাথে সাথে ব্যাকএন্ড থেকে রিয়েল ডেটা ফেচ করা
+  useEffect(() => {
+    async function fetchRequests() {
+      setIsLoadingList(true);
+      const result = await getLandlordRentalRequestsAction();
+      if (result.success && result.data) {
+        setRequests(Array.isArray(result.data) ? (result.data as RentalRequest[]) : []);
+      } else {
+        setRequests([]);
+      }
+      setIsLoadingList(false);
+    }
+    fetchRequests();
+  }, []);
+
+  // রিকোয়েস্ট স্ট্যাটাস আপডেট হ্যান্ডলার (Approve / Reject)
+  const handleStatusUpdate = (id: string, newStatus: "APPROVED" | "REJECTED") => {
+    setLoadingId(id);
+    startTransition(async () => {
+      const result = await updateRentalRequestStatusAction(id, newStatus);
+      
+      if (result.success) {
+        setRequests((prev) =>
+          prev.map((req) => (req.id === id ? { ...req, status: newStatus } : req))
+        );
+        alert(result.message || `Rental request successfully ${newStatus.toLowerCase()}!`);
+      } else {
+        alert(result.message || "Failed to update request status.");
+      }
+      setLoadingId(null);
+    });
+  };
+
+  // ফিল্টারিং লজিক (Search & Tabs)
+  const filteredRequests = requests.filter((item) => {
+    const tenantName = item.tenant?.name || "";
+    const propertyTitle = item.property?.title || "";
+
+    const matchesSearch =
+      tenantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      propertyTitle.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (activeTab === "PENDING") return matchesSearch && item.status === "PENDING";
+    if (activeTab === "APPROVED") return matchesSearch && item.status === "APPROVED";
+    if (activeTab === "REJECTED") return matchesSearch && item.status === "REJECTED";
+    return matchesSearch;
+  });
+
+  // কাউন্টার ক্যালকুলেশন
+  const pendingCount = requests.filter((r) => r.status === "PENDING").length;
+  const approvedCount = requests.filter((r) => r.status === "APPROVED").length;
+  const rejectedCount = requests.filter((r) => r.status === "REJECTED").length;
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
       
@@ -102,13 +129,13 @@ export default function LandlordRentalRequestsPage() {
         {/* Status Counter Chips */}
         <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0">
           <div className="px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold flex items-center gap-2 shrink-0">
-            <Clock className="w-4 h-4" /> Pending: 1
+            <Clock className="w-4 h-4" /> Pending: {pendingCount}
           </div>
           <div className="px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-2 shrink-0">
-            <CheckCircle2 className="w-4 h-4" /> Approved: 1
+            <CheckCircle2 className="w-4 h-4" /> Approved: {approvedCount}
           </div>
           <div className="px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2 shrink-0">
-            <XCircle className="w-4 h-4" /> Rejected: 1
+            <XCircle className="w-4 h-4" /> Rejected: {rejectedCount}
           </div>
         </div>
       </div>
@@ -119,22 +146,56 @@ export default function LandlordRentalRequestsPage() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tenant or property..."
             className="h-11 pl-10 pr-4 rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-[#07090e] text-sm font-medium focus-visible:ring-2 focus-visible:ring-amber-500"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          <Button variant="outline" className="h-10 rounded-xl bg-amber-500 text-slate-950 font-bold border-amber-500 hover:bg-amber-600">
-            All (3)
+          <Button
+            variant="outline"
+            onClick={() => setActiveTab("ALL")}
+            className={`h-10 rounded-xl font-bold ${
+              activeTab === "ALL"
+                ? "bg-amber-500 text-slate-950 border-amber-500 hover:bg-amber-600"
+                : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300"
+            }`}
+          >
+            All ({requests.length})
           </Button>
-          <Button variant="outline" className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
+          <Button
+            variant="outline"
+            onClick={() => setActiveTab("PENDING")}
+            className={`h-10 rounded-xl font-semibold ${
+              activeTab === "PENDING"
+                ? "bg-amber-500 text-slate-950 border-amber-500 hover:bg-amber-600"
+                : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            }`}
+          >
             Pending
           </Button>
-          <Button variant="outline" className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
+          <Button
+            variant="outline"
+            onClick={() => setActiveTab("APPROVED")}
+            className={`h-10 rounded-xl font-semibold ${
+              activeTab === "APPROVED"
+                ? "bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700"
+                : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            }`}
+          >
             Approved
           </Button>
-          <Button variant="outline" className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
+          <Button
+            variant="outline"
+            onClick={() => setActiveTab("REJECTED")}
+            className={`h-10 rounded-xl font-semibold ${
+              activeTab === "REJECTED"
+                ? "bg-rose-600 text-white border-rose-600 hover:bg-rose-700"
+                : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            }`}
+          >
             Rejected
           </Button>
         </div>
@@ -155,113 +216,139 @@ export default function LandlordRentalRequestsPage() {
             </thead>
 
             <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/70 text-sm">
-              {LANDLORD_RENTAL_REQUESTS.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-900/30 transition-colors group">
-                  
-                  {/* Tenant Profile */}
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.tenant.avatar}
-                        alt={item.tenant.name}
-                        className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-500/30"
-                      />
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-amber-500 transition-colors">
-                          {item.tenant.name}
-                        </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                          <Mail className="w-3 h-3 text-amber-500" /> {item.tenant.email}
-                        </span>
-                        <span className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                          <Phone className="w-3 h-3 text-amber-500" /> {item.tenant.phone}
-                        </span>
-                      </div>
-                    </div>
+              {isLoadingList ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-slate-400 font-medium">
+                    Loading rental requests...
                   </td>
-
-                  {/* Property Info */}
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.property.image}
-                        alt={item.property.title}
-                        className="w-12 h-10 rounded-xl object-cover shrink-0"
-                      />
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-1">
-                          {item.property.title}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {item.property.location}
-                        </span>
-                        <span className="text-xs text-amber-600 dark:text-amber-400 font-bold mt-0.5">
-                          {item.property.rent}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Move-in Date & Duration */}
-                  <td className="py-4 px-6">
-                    <div className="flex flex-col text-xs space-y-1">
-                      <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-amber-500" /> {item.moveInDate}
-                      </span>
-                      <span className="text-slate-400 font-medium">
-                        Duration: {item.duration}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Status Badge */}
-                  <td className="py-4 px-6">
-                    {item.status === "PENDING" && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                        <Clock className="w-3.5 h-3.5" /> Pending
-                      </span>
-                    )}
-                    {item.status === "APPROVED" && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Approved
-                      </span>
-                    )}
-                    {item.status === "REJECTED" && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                        <XCircle className="w-3.5 h-3.5" /> Rejected
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Approve / Reject Actions */}
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-9 px-3 rounded-xl border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white font-bold text-xs transition-all duration-200"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-9 px-3 rounded-xl border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white font-bold text-xs transition-all duration-200"
-                      >
-                        <XCircle className="w-3.5 h-3.5 mr-1" /> Reject
-                      </Button>
-                    </div>
-                  </td>
-
                 </tr>
-              ))}
+              ) : filteredRequests.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-slate-400 font-medium">
+                    No rental requests found.
+                  </td>
+                </tr>
+              ) : (
+                filteredRequests.map((item) => {
+                  const isLoadingThis = isPending && loadingId === item.id;
+                  
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-900/30 transition-colors group">
+                      
+                      {/* Tenant Profile */}
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          {item.tenant?.avatar && (
+                            <img
+                              src={item.tenant.avatar}
+                              alt={item.tenant?.name || "Tenant"}
+                              className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-500/30"
+                            />
+                          )}
+                          <div className="flex flex-col">
+                            <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-amber-500 transition-colors">
+                              {item.tenant?.name}
+                            </span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                              <Mail className="w-3 h-3 text-amber-500" /> {item.tenant?.email}
+                            </span>
+                            <span className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                              <Phone className="w-3 h-3 text-amber-500" /> {item.tenant?.phone}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Property Info */}
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          {item.property?.image && (
+                            <img
+                              src={item.property.image}
+                              alt={item.property?.title || "Property"}
+                              className="w-12 h-10 rounded-xl object-cover shrink-0"
+                            />
+                          )}
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-1">
+                              {item.property?.title}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {item.property?.location}
+                            </span>
+                            <span className="text-xs text-amber-600 dark:text-amber-400 font-bold mt-0.5">
+                              {item.property?.rent}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Move-in Date & Duration */}
+                      <td className="py-4 px-6">
+                        <div className="flex flex-col text-xs space-y-1">
+                          <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-amber-500" /> {item.moveInDate}
+                          </span>
+                          <span className="text-slate-400 font-medium">
+                            Duration: {item.duration}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Status Badge */}
+                      <td className="py-4 px-6">
+                        {item.status === "PENDING" && (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <Clock className="w-3.5 h-3.5" /> Pending
+                          </span>
+                        )}
+                        {item.status === "APPROVED" && (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Approved
+                          </span>
+                        )}
+                        {item.status === "REJECTED" && (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                            <XCircle className="w-3.5 h-3.5" /> Rejected
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Approve / Reject Actions */}
+                      <td className="py-4 px-6 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStatusUpdate(item.id, "APPROVED")}
+                            disabled={isLoadingThis || item.status === "APPROVED"}
+                            className="h-9 px-3 rounded-xl border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white font-bold text-xs transition-all duration-200 disabled:opacity-50"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStatusUpdate(item.id, "REJECTED")}
+                            disabled={isLoadingThis || item.status === "REJECTED"}
+                            className="h-9 px-3 rounded-xl border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white font-bold text-xs transition-all duration-200 disabled:opacity-50"
+                          >
+                            <XCircle className="w-3.5 h-3.5 mr-1" /> Reject
+                          </Button>
+                        </div>
+                      </td>
+
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
 
         {/* Pagination Footer */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 font-medium">
-          <span>Showing 1 to 3 of 3 rental requests</span>
+          <span>Showing {filteredRequests.length} of {requests.length} rental requests</span>
           <div className="flex items-center gap-2">
             <Button size="icon" variant="outline" disabled className="h-8 w-8 rounded-lg">
               <ChevronLeft className="w-4 h-4" />

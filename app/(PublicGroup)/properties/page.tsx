@@ -1,207 +1,312 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Building2,
   Sparkles,
   Search,
   MapPin,
-  Bed,
-  Bath,
-  Maximize2,
   ArrowRight,
-  Filter,
-  SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
   Tag,
+  Check,
+  SlidersHorizontal,
+  ShieldCheck,
+  Building,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getProperty } from "../_action/propertyAction";
 
-// 🌟 Dummy Data for Public Properties List
-const PUBLIC_PROPERTIES = [
-  {
-    id: "6a9c0fce-ebcc-4297-b0e5-dd7c32269b89",
-    title: "Modern Apartment with City View",
-    description: "A beautiful and spacious apartment in the heart of the city with great natural light.",
-    location: "Borishal, Bangladesh",
-    price: 10000,
-    beds: 3,
-    baths: 2,
-    sqft: "1,500",
-    category: "Apartment",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
-    isAvailable: "AVAILABLE",
-  },
-  {
-    id: "7b8d1a-fcd-4398-c1f6-ee8d43378c90",
-    title: "Luxury Duplex Family Home",
-    description: "Premium duplex with private parking and round-the-clock security.",
-    location: "Gulshan, Dhaka",
-    price: 45000,
-    beds: 4,
-    baths: 3,
-    sqft: "2,800",
-    category: "Duplex",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop",
-    isAvailable: "AVAILABLE",
-  },
-  {
-    id: "5c7e9b-abc-1234-9e8d-112233445566",
-    title: "Cozy Studio Apartment",
-    description: "Compact and modern studio ideal for single professionals or students.",
-    location: "Banani, Dhaka",
-    price: 18000,
-    beds: 1,
-    baths: 1,
-    sqft: "650",
-    category: "Studio",
-    image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=800&auto=format&fit=crop",
-    isAvailable: "AVAILABLE",
-  },
-];
+interface ISproperty {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  amenities: string[];
+  image: string;
+  isAvailable: string;
+  categoryId: string;
+  landlordId: string;
+  createdAt: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  landlord: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
 
 export default function PublicPropertiesPage() {
+  const [properties, setProperties] = useState<ISproperty[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await getProperty();
+        if (response.success && response.data) {
+          setProperties(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#04060a] text-slate-900 dark:text-slate-100 pb-16">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 pb-20 selection:bg-amber-500 selection:text-black">
       
-      {/* 🌟 Hero Header Section */}
-      <div className="bg-white dark:bg-[#07090e] border-b border-slate-200/80 dark:border-slate-800/80 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-extrabold">
-            <Sparkles className="w-4 h-4" /> Explore Available Rentals
+      {/* 🌟 Luxury Hero Section */}
+      <div className="relative overflow-hidden bg-white dark:bg-[#07090e] border-b border-slate-200/80 dark:border-slate-800/80 pt-16 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none opacity-40 dark:opacity-20 blur-3xl">
+          <div className="absolute -top-10 left-1/4 w-72 h-72 bg-amber-500/30 rounded-full" />
+          <div className="absolute top-10 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto text-center space-y-5">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold tracking-wide shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+            <span>EXECUTIVE RENTAL COLLECTION</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            Find Your Dream <span className="text-amber-500">Property</span>
+
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 dark:text-white">
+            Discover Premium <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">Living Spaces</span>
           </h1>
-          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">
-            Browse through our verified listings, compare prices, and request rentals directly from landlords.
+
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
+            Curated selection of verified luxury apartments, duplexes, and suites available for instant rental booking.
           </p>
 
-          {/* Search & Filter Bar */}
-          <div className="max-w-3xl mx-auto mt-8 flex flex-col sm:flex-row items-center gap-3 bg-white dark:bg-[#07090e] p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
-            <div className="relative w-full flex items-center">
-              <Search className="absolute left-4 w-4 h-4 text-slate-400" />
+          <div className="max-w-3xl mx-auto mt-10 p-2 sm:p-2.5 rounded-2xl sm:rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-slate-300/40 dark:shadow-amber-500/5 flex flex-col sm:flex-row items-center gap-2 transition-all">
+            <div className="relative w-full flex items-center pl-3">
+              <Search className="w-5 h-5 text-amber-500 shrink-0" />
               <Input
                 type="text"
-                placeholder="Search by location, title..."
-                className="h-12 pl-11 pr-4 border-0 bg-transparent text-sm font-medium focus-visible:ring-0"
+                placeholder="Search by city, neighborhood, or property title..."
+                className="h-11 border-0 bg-transparent text-sm font-medium focus-visible:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
               />
             </div>
-            <Button className="w-full sm:w-auto h-12 px-8 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold shadow-lg shadow-amber-500/25">
-              Search
-            </Button>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button variant="ghost" className="hidden sm:flex h-11 px-4 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-amber-500" /> Filters
+              </Button>
+
+              <Button className="w-full sm:w-auto h-11 px-8 rounded-xl sm:rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:opacity-95 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all duration-300">
+                Find Places
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 🌟 Main Content Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
+      {/* 🌟 Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-8">
         
-        {/* Category Filter Chips */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <Button variant="outline" className="h-10 rounded-xl bg-amber-500 text-slate-950 font-bold border-amber-500 hover:bg-amber-600">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60 dark:border-slate-800/60">
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+            <Button className="h-9 px-5 rounded-full bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-xs font-bold shadow-sm">
               All Properties
             </Button>
-            <Button variant="outline" className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
-              Apartment
-            </Button>
-            <Button variant="outline" className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
+            <Button variant="outline" className="h-9 px-5 rounded-full border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-medium">
               Duplex
             </Button>
-            <Button variant="outline" className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
-              Studio
+            <Button variant="outline" className="h-9 px-5 rounded-full border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-medium">
+              Apartments
             </Button>
           </div>
 
-          <span className="text-xs text-slate-400 font-semibold">
-            Showing 3 properties
-          </span>
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+            <Building className="w-4 h-4 text-amber-500" />
+            <span>Showing {loading ? "..." : properties.length} Available Listings</span>
+          </div>
         </div>
 
-        {/* Properties Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PUBLIC_PROPERTIES.map((property) => (
-            <div
-              key={property.id}
-              className="group bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/40 dark:shadow-none hover:border-amber-500/50 transition-all duration-300 flex flex-col justify-between"
-            >
-              <div>
-                {/* Property Image */}
-                <div className="relative h-56 w-full overflow-hidden">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
-                  />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-extrabold bg-slate-950/80 backdrop-blur-md text-amber-400 border border-white/10 flex items-center gap-1.5">
-                    <Tag className="w-3 h-3" /> {property.category}
-                  </span>
-                  <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-500/90 text-white backdrop-blur-md">
-                    Available
-                  </span>
+        {/* 🌟 Shadcn Skeleton Loader */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden p-3 flex flex-col justify-between">
+                {/* Image Skeleton */}
+                <Skeleton className="h-60 w-full rounded-[20px]" />
+                
+                <div className="p-4 space-y-4">
+                  {/* Title & Location Skeleton */}
+                  <div className="space-y-2.5">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-6 w-3/4" />
+                  </div>
+
+                  {/* Description Skeleton */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-3.5 w-full" />
+                    <Skeleton className="h-3.5 w-5/6" />
+                  </div>
+
+                  {/* Amenities Badges Skeleton */}
+                  <div className="flex gap-2 pt-1">
+                    <Skeleton className="h-6 w-16 rounded-lg" />
+                    <Skeleton className="h-6 w-20 rounded-lg" />
+                    <Skeleton className="h-6 w-16 rounded-lg" />
+                  </div>
                 </div>
 
-                {/* Property Details */}
-                <div className="p-5 space-y-3">
-                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-100 line-clamp-1 group-hover:text-amber-500 transition-colors">
-                    {property.title}
-                  </h3>
-
-                  <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
-                    <MapPin className="w-4 h-4 text-amber-500 shrink-0" />
-                    {property.location}
-                  </p>
-
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
-                    {property.description}
-                  </p>
-
-                  {/* Specs Chips */}
-                  <div className="flex items-center justify-between py-2.5 px-3 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    <div className="flex items-center gap-1">
-                      <Bed className="w-3.5 h-3.5 text-amber-500" /> {property.beds} Bed
+                {/* Footer Skeleton */}
+                <div className="p-4 pt-0 space-y-4">
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-8 h-8 rounded-full" />
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Bath className="w-3.5 h-3.5 text-amber-500" /> {property.baths} Bath
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3 w-12" />
+                      <Skeleton className="h-7 w-24" />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Maximize2 className="w-3.5 h-3.5 text-amber-500" /> {property.sqft} sqft
-                    </div>
+                    <Skeleton className="h-11 w-32 rounded-2xl" />
                   </div>
                 </div>
               </div>
-
-              {/* Price & Action Footer */}
-              <div className="p-5 pt-0 flex items-center justify-between mt-4">
+            ))}
+          </div>
+        ) : properties.length === 0 ? (
+          <div className="text-center py-24 bg-white dark:bg-[#07090e] rounded-3xl border border-slate-200 dark:border-slate-800">
+            <Building className="w-12 h-12 mx-auto text-amber-500/50 mb-3" />
+            <h3 className="text-lg font-bold">No Properties Found</h3>
+            <p className="text-xs text-slate-500 mt-1">Please check back later for new exclusive listings.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {properties.map((property) => (
+              <div
+                key={property.id}
+                className="group relative bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5 hover:border-amber-500/40 transition-all duration-500 flex flex-col justify-between"
+              >
                 <div>
-                  <span className="text-xs text-slate-400 font-semibold">Rent Price</span>
-                  <div className="text-xl font-extrabold text-amber-600 dark:text-amber-400">
-                    ৳{property.price.toLocaleString()}
-                    <span className="text-xs text-slate-400 font-normal">/mo</span>
+                  <div className="relative h-60 w-full overflow-hidden bg-slate-100 dark:bg-slate-900 p-2">
+                    <img
+                      src={property.image}
+                      alt={property.title}
+                      className="w-full h-full object-cover rounded-[20px] group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none rounded-[20px] m-2" />
+
+                    <div className="absolute top-5 left-5">
+                      <span className="px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/60 backdrop-blur-md text-amber-400 border border-white/10 flex items-center gap-1.5 shadow-lg">
+                        <Tag className="w-3 h-3 text-amber-400" />
+                        {property.category?.name || "Luxury"}
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-5 left-5">
+                      <span
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase backdrop-blur-md border shadow-lg flex items-center gap-1 ${
+                          property.isAvailable === "AVAILABLE"
+                            ? "bg-emerald-500/80 text-white border-emerald-400/30"
+                            : "bg-rose-500/80 text-white border-rose-400/30"
+                        }`}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                        {property.isAvailable === "AVAILABLE" ? "Available Now" : "Rented Out"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-xs font-semibold">
+                        <MapPin className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">{property.location}</span>
+                      </div>
+
+                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-white line-clamp-1 group-hover:text-amber-500 transition-colors">
+                        {property.title}
+                      </h3>
+                    </div>
+
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      {property.description}
+                    </p>
+
+                    {property.amenities && property.amenities.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        {property.amenities.map((amenity, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 capitalize flex items-center gap-1"
+                          >
+                            <Check className="w-3 h-3 text-amber-500" />
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <Link href={`/properties/${property.id}`}>
-                  <Button className="h-10 px-5 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white font-bold text-xs transition-all duration-300">
-                    View Details <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                  </Button>
-                </Link>
+                <div className="p-6 pt-0 space-y-4">
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 font-black text-xs flex items-center justify-center shadow-sm">
+                        {property.landlord?.name?.charAt(0) || "L"}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-slate-400 font-medium">Listed By</span>
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                          {property.landlord?.name}
+                          <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Rent Fee</span>
+                      <div className="text-2xl font-black text-slate-900 dark:text-white flex items-baseline gap-0.5">
+                        <span className="text-amber-500 text-lg">৳</span>
+                        {property.price?.toLocaleString()}
+                        <span className="text-xs text-slate-400 font-medium">/mo</span>
+                      </div>
+                    </div>
+
+                    <Link href={`/properties/${property.id}`}>
+                      <Button className="h-11 px-6 rounded-2xl bg-slate-900 dark:bg-slate-800 hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 hover:text-slate-950 text-white font-extrabold text-xs transition-all duration-300 shadow-md">
+                        Explore <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+
               </div>
+            ))}
+          </div>
+        )}
 
-            </div>
-          ))}
-        </div>
-
-        {/* Pagination Footer */}
-        <div className="p-4 bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl flex items-center justify-between text-xs text-slate-500 font-medium">
-          <span>Showing 1 to 3 of 3 public properties</span>
+        {/* Footer */}
+        <div className="p-5 bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+          <span>Displaying total {properties.length} verified listings</span>
           <div className="flex items-center gap-2">
-            <Button size="icon" variant="outline" disabled className="h-8 w-8 rounded-lg">
+            <Button size="icon" variant="outline" disabled className="h-9 w-9 rounded-xl border-slate-200 dark:border-slate-800">
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button size="icon" variant="outline" disabled className="h-8 w-8 rounded-lg">
+            <Button size="icon" variant="outline" disabled className="h-9 w-9 rounded-xl border-slate-200 dark:border-slate-800">
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>

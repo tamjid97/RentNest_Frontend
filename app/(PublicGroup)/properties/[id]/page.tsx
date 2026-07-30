@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import {
   Building2,
-  Sparkles,
   ArrowLeft,
   MapPin,
   Bed,
@@ -10,55 +9,145 @@ import {
   Maximize2,
   ShieldCheck,
   CreditCard,
-  Calendar,
-  User,
-  CheckCircle2,
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getPropertyById } from "../../_action/propertyAction";
+import RentalActionBox from "../../_components/RentalActionBox";
 
-// 🌟 Dummy Property Details Data with Payment Option
-const PROPERTY_DETAILS = {
-  id: "6a9c0fce-ebcc-4297-b0e5-dd7c32269b89",
-  title: "Modern Apartment with City View",
-  description: "A beautiful and spacious apartment in the heart of the city with great natural light, premium fittings, high-speed elevator, and round-the-clock security. Perfect for families or working professionals looking for luxury and convenience.",
-  location: "Borishal, Bangladesh",
-  price: 10000,
-  beds: 3,
-  baths: 2,
-  sqft: "1,500",
-  category: "Apartment",
-  image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop",
-  landlord: {
-    name: "Rahim Uddin",
-    phone: "+880 1712-345678",
-    email: "rahim.uddin@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop",
-  },
-  amenities: [
-    "High-speed Elevator",
-    "24/7 Security & CCTV",
-    "Dedicated Parking Space",
-    "Backup Generator",
-    "High-speed Internet Ready",
-  ],
+
+// 🛠️ Interfaces matching your exact backend response
+interface Landlord {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  profilePhoto?: string | null;
+  [key: string]: unknown;
+}
+
+interface Category {
+  id?: string;
+  name?: string;
+  [key: string]: unknown;
+}
+
+interface PropertyData {
+  id?: string;
+  title?: string;
+  description?: string;
+  location?: string | Record<string, unknown>;
+  price?: number;
+  amenities?: string[];
+  isAvailable?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  categoryId?: string;
+  landlordId?: string;
+  category?: Category | string;
+  landlord?: Landlord | string;
+  beds?: number;
+  baths?: number;
+  sqft?: number | string;
+  image?: string;
+  [key: string]: unknown;
+}
+
+// 🛠️ Safe helper function using `unknown` instead of `any`
+const renderValue = (value: unknown, fallback: string = ""): string => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    const name = obj.name;
+    const title = obj.title;
+    const username = obj.username;
+    if (typeof name === "string") return name;
+    if (typeof title === "string") return title;
+    if (typeof username === "string") return username;
+    return fallback;
+  }
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return String(value);
+  }
+  return fallback;
 };
 
-export default function PropertyDetailsWithPaymentPage() {
+export default async function PropertyDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }> | { id: string };
+}) {
+  const resolvedParams = await params;
+  const propertyId = resolvedParams.id;
+
+  const response = await getPropertyById(propertyId);
+  const property = (response?.data ?? null) as PropertyData | null;
+
+  if (!response?.success || !property) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-[#04060a] text-center p-6">
+        <Building2 className="w-12 h-12 text-amber-500 mb-3" />
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+          Property Not Found
+        </h2>
+        <p className="text-sm text-slate-500 mt-1 mb-6">
+          The property you are looking for does not exist or could not be loaded.
+        </p>
+        <Link href="/properties">
+          <Button className="rounded-2xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-600">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Properties
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Safe variables for rendering
+  const categoryName = renderValue(property.category, "Apartment");
+  const locationName = renderValue(property.location, "Location not specified");
+  const titleName = renderValue(property.title, "Property Details");
+  
+  // Landlord Details
+  let landlordName = "Property Owner";
+  let landlordAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop";
+
+  if (property.landlord && typeof property.landlord === "object") {
+    const landlordObj = property.landlord as Landlord;
+    if (typeof landlordObj.name === "string") {
+      landlordName = landlordObj.name;
+    }
+    if (typeof landlordObj.profilePhoto === "string" && landlordObj.profilePhoto.trim() !== "") {
+      landlordAvatar = landlordObj.profilePhoto;
+    }
+  }
+
+  // Property Image fallback since backend response lacks image field
+  const imageUrl =
+    typeof property.image === "string" && property.image.trim() !== ""
+      ? property.image
+      : "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop";
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#04060a] text-slate-900 dark:text-slate-100 pb-20">
       
-      {/* 🌟 Top Navigation & Header */}
+      {/* Top Navigation */}
       <div className="bg-white dark:bg-[#07090e] border-b border-slate-200/80 dark:border-slate-800/80 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/properties">
-            <Button variant="outline" className="h-11 px-4 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all">
+            <Button
+              variant="outline"
+              className="h-11 px-4 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all"
+            >
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Properties
             </Button>
           </Link>
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              Verified Property
+              {typeof property.isAvailable === "string" ? property.isAvailable : "AVAILABLE"}
             </span>
           </div>
         </div>
@@ -67,18 +156,18 @@ export default function PropertyDetailsWithPaymentPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* 🌟 Left Side: Main Property Info */}
+          {/* Left Side: Main Property Info */}
           <div className="lg:col-span-8 space-y-8">
             
             {/* Image Banner */}
             <div className="relative h-[350px] sm:h-[450px] w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 dark:border-slate-800/80">
               <img
-                src={PROPERTY_DETAILS.image}
-                alt={PROPERTY_DETAILS.title}
+                src={imageUrl}
+                alt={titleName}
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-4 left-4 px-4 py-1.5 rounded-full text-xs font-extrabold bg-slate-950/80 backdrop-blur-md text-amber-400 border border-white/10">
-                {PROPERTY_DETAILS.category}
+                {categoryName}
               </div>
             </div>
 
@@ -86,24 +175,24 @@ export default function PropertyDetailsWithPaymentPage() {
             <div className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-                  {PROPERTY_DETAILS.title}
+                  {titleName}
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-2 font-medium">
-                  <MapPin className="w-4 h-4 text-amber-500" />
-                  {PROPERTY_DETAILS.location}
+                  <MapPin className="w-4 h-4 text-amber-500 shrink-0" />
+                  {locationName}
                 </p>
               </div>
 
               {/* Specs Grid */}
               <div className="grid grid-cols-3 gap-4 py-4 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">
                 <div className="flex items-center gap-2">
-                  <Bed className="w-4 h-4 text-amber-500" /> {PROPERTY_DETAILS.beds} Bedrooms
+                  <Bed className="w-4 h-4 text-amber-500 shrink-0" /> {typeof property.beds === "number" ? property.beds : 0} Beds
                 </div>
                 <div className="flex items-center gap-2">
-                  <Bath className="w-4 h-4 text-amber-500" /> {PROPERTY_DETAILS.baths} Bathrooms
+                  <Bath className="w-4 h-4 text-amber-500 shrink-0" /> {typeof property.baths === "number" ? property.baths : 0} Baths
                 </div>
                 <div className="flex items-center gap-2">
-                  <Maximize2 className="w-4 h-4 text-amber-500" /> {PROPERTY_DETAILS.sqft} sqft
+                  <Maximize2 className="w-4 h-4 text-amber-500 shrink-0" /> {property.sqft ?? "N/A"} sqft
                 </div>
               </div>
 
@@ -113,87 +202,47 @@ export default function PropertyDetailsWithPaymentPage() {
                   About Property
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
-                  {PROPERTY_DETAILS.description}
+                  {typeof property.description === "string" ? property.description : "No description provided."}
                 </p>
               </div>
 
               {/* Amenities */}
-              <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-                  Key Amenities
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {PROPERTY_DETAILS.amenities.map((amenity, index) => (
-                    <div key={index} className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      <div className="w-5 h-5 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center">
-                        <Check className="w-3.5 h-3.5" />
-                      </div>
-                      {amenity}
-                    </div>
-                  ))}
+              {Array.isArray(property.amenities) && property.amenities.length > 0 && (
+                <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+                    Key Amenities
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {property.amenities.map((item: string, index: number) => {
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                            <Check className="w-3.5 h-3.5" />
+                          </div>
+                          {item}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
             </div>
-
           </div>
 
-          {/* 🌟 Right Side: Pricing & Payment Box */}
+     {/* Right Side: Pricing & Payment Box */}
           <div className="lg:col-span-4 sticky top-6">
-            <div className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6">
-              
-              {/* Price Tag */}
-              <div className="flex items-baseline justify-between pb-6 border-b border-slate-200 dark:border-slate-800">
-                <div>
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Monthly Rent</span>
-                  <h2 className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
-                    ৳{PROPERTY_DETAILS.price.toLocaleString()}
-                  </h2>
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                  Per Month
-                </span>
-              </div>
-
-              {/* Landlord Card */}
-              <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60">
-                <img
-                  src={PROPERTY_DETAILS.landlord.avatar}
-                  alt={PROPERTY_DETAILS.landlord.name}
-                  className="w-12 h-12 rounded-xl object-cover ring-2 ring-amber-500/40"
-                />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Managed By</span>
-                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                    {PROPERTY_DETAILS.landlord.name}
-                  </span>
-                  <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold">
-                    Verified Landlord
-                  </span>
-                </div>
-              </div>
-
-              {/* 🌟 Payment / Rent Button */}
-              <div className="space-y-3 pt-2">
-                <Button className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm">
-                  <CreditCard className="w-5 h-5 mr-2 stroke-[2.5]" />
-                  Proceed to Payment (Pay Rent)
-                </Button>
-
-                <Button variant="outline" className="w-full h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 text-xs">
-                  Submit Rental Request First
-                </Button>
-              </div>
-
-              {/* Security Note */}
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-amber-500 shrink-0" />
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Secure transaction guaranteed. Payments are processed through encrypted gateway.
-                </p>
-              </div>
-
-            </div>
+            <RentalActionBox
+              propertyId={property.id || ""}
+              price={typeof property.price === "number" ? property.price : 0}
+              landlord={property.landlord}
+              // ব্যাকএন্ড থেকে আসা স্ট্যাটাসটি এখানে পাস করুন।
+              // উদাহরণস্বরূপ: property.currentUserRequestStatus (ব্যাকএন্ড রেসপন্স অনুযায়ী নাম পরিবর্তন করুন)
+              initialStatus={typeof property.currentUserRequestStatus === "string" ? property.currentUserRequestStatus : ""}
+            />
           </div>
 
         </div>
