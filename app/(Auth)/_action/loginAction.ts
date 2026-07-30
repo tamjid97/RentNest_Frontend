@@ -68,3 +68,10 @@ if (decodedToken.role === "TENANT") {
 
 return result
 }
+
+
+export const isAccessTokenExist = async () => {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
+    return token;
+};

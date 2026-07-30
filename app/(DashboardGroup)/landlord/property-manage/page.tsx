@@ -86,7 +86,7 @@ export default function LandlordPropertiesPage() {
               Add New Property
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] bg-white dark:bg-[#07090e] border-slate-200 dark:border-slate-800">
+          <DialogContent className="sm:max-w-[700px] bg-white dark:bg-[#07090e] border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">Add New Property</DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400">
@@ -94,16 +94,83 @@ export default function LandlordPropertiesPage() {
               </DialogDescription>
             </DialogHeader>
             
-            {/* Create Form Placeholder */}
-            <div className="py-6 flex flex-col gap-4">
-              <div className="p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-400 text-sm">
-                [ Create Property Form Fields Will Go Here ]
+            {/* Create Form Structure */}
+            <div className="py-4 flex flex-col gap-5">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Title */}
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Property Title</label>
+                  <Input placeholder="e.g. Modern Apartment" className="h-11 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50" />
+                </div>
+
+                {/* Location */}
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Location</label>
+                  <Input placeholder="e.g. Dhaka, Bangladesh" className="h-11 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50" />
+                </div>
+
+                {/* Price */}
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Price (৳) / month</label>
+                  <Input type="number" placeholder="e.g. 10000" className="h-11 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50" />
+                </div>
+
+                {/* Category Selection */}
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Category</label>
+                  <select 
+                    defaultValue="" 
+                    className="flex h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-slate-900 dark:text-slate-100 appearance-none"
+                  >
+                    <option value="" disabled>Select a category...</option>
+                    <option value="a607ec92-5e02-4570-94ea-20aa67d28707">Apartment</option>
+                    <option value="duplex-id">Duplex</option>
+                    <option value="villa-id">Villa</option>
+                  </select>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                  <textarea 
+                    placeholder="Write a detailed description about the property..." 
+                    className="flex min-h-[100px] w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-slate-900 dark:text-slate-100 resize-y"
+                  ></textarea>
+                </div>
+
+                {/* Amenities - Checkbox Grid */}
+                <div className="space-y-3 md:col-span-2">
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Amenities</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:border-amber-500/50 transition-colors group">
+                      <input type="checkbox" value="gym" className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 bg-transparent" />
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">Gym</span>
+                    </label>
+                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:border-amber-500/50 transition-colors group">
+                      <input type="checkbox" value="garage" className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 bg-transparent" />
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">Garage</span>
+                    </label>
+                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:border-amber-500/50 transition-colors group">
+                      <input type="checkbox" value="wifi" className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 bg-transparent" />
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">Free WiFi</span>
+                    </label>
+                    <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:border-amber-500/50 transition-colors group">
+                      <input type="checkbox" value="security" className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 bg-transparent" />
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">Security</span>
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-end gap-3 mt-4">
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800">Cancel</Button>
+                  <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold">Cancel</Button>
                 </DialogTrigger>
-                <Button className="rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 font-bold">Save Property</Button>
+                <Button className="rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 font-bold shadow-lg shadow-amber-500/20 px-6">
+                  Save Property
+                </Button>
               </div>
             </div>
           </DialogContent>
@@ -220,7 +287,7 @@ export default function LandlordPropertiesPage() {
                       Update
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[600px] bg-white dark:bg-[#07090e] border-slate-200 dark:border-slate-800">
+                  <DialogContent className="sm:max-w-[700px] bg-white dark:bg-[#07090e] border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">Update Property</DialogTitle>
                       <DialogDescription className="text-slate-500 dark:text-slate-400">
@@ -228,16 +295,62 @@ export default function LandlordPropertiesPage() {
                       </DialogDescription>
                     </DialogHeader>
                     
-                    {/* Update Form Placeholder */}
-                    <div className="py-6 flex flex-col gap-4">
-                      <div className="p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-400 text-sm">
-                        [ Update Form Fields Will Go Here ]
+                    {/* Update Form (Same UI as Create for consistency) */}
+                    <div className="py-4 flex flex-col gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Property Title</label>
+                          <Input defaultValue={property.title} className="h-11 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Location</label>
+                          <Input defaultValue={property.location} className="h-11 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Price (৳) / month</label>
+                          <Input type="number" defaultValue={property.price} className="h-11 rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50" />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Category</label>
+                          <select 
+                            defaultValue="a607ec92-5e02-4570-94ea-20aa67d28707" 
+                            className="flex h-11 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-slate-900 dark:text-slate-100 appearance-none"
+                          >
+                            <option value="a607ec92-5e02-4570-94ea-20aa67d28707">Apartment</option>
+                            <option value="duplex">Duplex</option>
+                            <option value="villa">Villa</option>
+                          </select>
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</label>
+                          <textarea 
+                            defaultValue={property.description}
+                            className="flex min-h-[100px] w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-slate-900 dark:text-slate-100 resize-y"
+                          ></textarea>
+                        </div>
+                        <div className="space-y-3 md:col-span-2">
+                          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Amenities</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {["gym", "garage", "wifi", "security"].map((amenity) => (
+                              <label key={amenity} className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 cursor-pointer hover:border-amber-500/50 transition-colors group">
+                                <input 
+                                  type="checkbox" 
+                                  value={amenity} 
+                                  defaultChecked={property.amenities.includes(amenity)}
+                                  className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 bg-transparent" 
+                                />
+                                <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 capitalize">{amenity}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-end gap-3 mt-4">
+                      
+                      <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                         <DialogTrigger asChild>
-                          <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800">Cancel</Button>
+                          <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800 font-semibold">Cancel</Button>
                         </DialogTrigger>
-                        <Button className="rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 font-bold">Save Changes</Button>
+                        <Button className="rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 font-bold px-6">Save Changes</Button>
                       </div>
                     </div>
                   </DialogContent>

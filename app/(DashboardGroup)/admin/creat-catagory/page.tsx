@@ -1,10 +1,56 @@
-import React from "react";
+"use client";
+import React, { useActionState, useEffect } from "react";
 import { FolderPlus, Sparkles, Plus, Layers, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useFormStatus } from "react-dom";
+import { createCatagory } from "../_action/catagoryAction";
+import { toast } from "sonner";
+
+
+
+  // work 1
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+      <Button 
+        type="submit" 
+        disabled={pending}
+        className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold text-base shadow-xl shadow-amber-500/25 transition-all duration-300"
+      >
+        {pending ? "Creating..." : "Create Category"}
+      </Button>
+    );
+  }
+
+
+// work 2
+    const initialState = {
+    success: false,
+    statusCode: 200,
+    message: "",
+    data: {},
+  };
+
+
+
 
 export default function CreateCategoryPage() {
+
+    // work 3
+  const [state, formAction] = useActionState(createCatagory, initialState);
+
+// woark8
+useEffect(() => {
+    if (state?.message) {
+      if (state.success) {
+        toast.success(state.message);
+      } else {
+        toast.error(state.message);
+      }
+    }
+  }, [state]);
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8">
       {/* 🌟 Centered Card Container with Ambient Glow */}
@@ -34,7 +80,9 @@ export default function CreateCategoryPage() {
           </div>
 
           {/* 🌟 Pure Form UI */}
-          <form className="space-y-6">
+            {/* woark-4 */}
+          <form action={formAction} className="space-y-6">
+                          {/* wark 5 */}
             <div className="space-y-2">
               <Label 
                 htmlFor="categoryName" 
@@ -49,6 +97,7 @@ export default function CreateCategoryPage() {
                 </div>
                 <Input
                   id="categoryName"
+                  // wark-6
                   name="name"
                   type="text"
                   placeholder="e.g. Apartment, Villa, Duplex"
@@ -65,13 +114,15 @@ export default function CreateCategoryPage() {
             </div>
 
             {/* Submit Button */}
-            <Button
+            {/* woark-7 */}
+            <SubmitButton />
+            {/* <Button
               type="submit"
               className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold text-base shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300"
             >
               <Plus className="mr-2 h-5 w-5 stroke-[3]" />
               Create Category
-            </Button>
+            </Button> */}
           </form>
 
         </div>
