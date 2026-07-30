@@ -7,7 +7,6 @@ import {
   Home,
   Building2,
   HelpCircle,
-  Mail,
   LogOut,
   Settings,
   LayoutDashboard,
@@ -15,6 +14,7 @@ import {
   X,
   Sun,
   Moon,
+  ChartBarStacked,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -125,8 +125,9 @@ export function Navbar({ user }: NavbarProps) {
   const navLinks = [
     { label: "Home", href: "/", icon: Home },
     { label: "Properties", href: "/properties", icon: Building2 },
+    { label: "Categories", href: "/categories", icon: ChartBarStacked },
     { label: "How it Works", href: "/how-it-works", icon: HelpCircle },
-    { label: "Contact", href: "/contact", icon: Mail },
+    
   ];
 
   return (

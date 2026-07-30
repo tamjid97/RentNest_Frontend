@@ -94,21 +94,21 @@ export default function TenantDashboard() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-50/80 via-white to-slate-100 p-8 shadow-xl shadow-slate-200/50 dark:bg-[#07090e] dark:from-slate-900 dark:via-[#07090e] dark:to-[#0a0f16] dark:shadow-2xl sm:p-12 sm:py-16 border border-indigo-200/60 dark:border-indigo-500/20"
+        className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-50/80 via-white to-slate-100 p-8 shadow-xl shadow-slate-200/50 dark:bg-[#07090e] dark:from-slate-900 dark:via-[#07090e] dark:to-[#0a0f16] dark:shadow-2xl sm:p-12 sm:py-16 border border-amber-200/60 dark:border-amber-500/20"
       >
         {/* Subtle glowing borders and mesh background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 dark:from-transparent dark:to-transparent z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 dark:from-transparent dark:to-transparent z-0 pointer-events-none" />
         
         {/* Animated Background Glowing Orbs */}
         <motion.div 
           animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -right-20 -top-32 h-[500px] w-[500px] rounded-full bg-indigo-400/20 dark:bg-indigo-500/20 blur-[120px] pointer-events-none z-0" 
+          className="absolute -right-20 -top-32 h-[500px] w-[500px] rounded-full bg-amber-400/20 dark:bg-amber-500/20 blur-[120px] pointer-events-none z-0" 
         />
         <motion.div 
           animate={{ scale: [1, 1.4, 1], opacity: [0.1, 0.2, 0.1] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute -bottom-40 left-10 h-[400px] w-[400px] rounded-full bg-purple-400/20 dark:bg-purple-600/20 blur-[100px] pointer-events-none z-0" 
+          className="absolute -bottom-40 left-10 h-[400px] w-[400px] rounded-full bg-orange-400/20 dark:bg-orange-600/20 blur-[100px] pointer-events-none z-0" 
         />
 
         <div className="relative z-10 max-w-3xl">
@@ -116,20 +116,20 @@ export default function TenantDashboard() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-indigo-500/20 bg-indigo-500/10 dark:border-indigo-500/30 dark:bg-indigo-500/10 px-5 py-2 text-sm font-semibold text-indigo-700 dark:text-indigo-200 backdrop-blur-md shadow-sm"
+            className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-amber-500/20 bg-amber-500/10 dark:border-amber-500/30 dark:bg-amber-500/10 px-5 py-2 text-sm font-semibold text-amber-700 dark:text-amber-200 backdrop-blur-md shadow-sm"
           >
-            <Compass className="h-4 w-4 text-indigo-600 dark:text-indigo-400 drop-shadow-sm" />
+            <Compass className="h-4 w-4 text-amber-600 dark:text-amber-400 drop-shadow-sm" />
             <span className="tracking-wide uppercase text-[11px]">Tenant Portal Active</span>
           </motion.div>
           
           <h1 className="mb-5 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-slate-200 dark:to-slate-400">
             Welcome to your <br className="hidden sm:block" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-200 dark:to-purple-400">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-200 dark:to-amber-500">
               Comfort Zone
             </span>
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed max-w-2xl font-medium">
-            Explore saved homes, manage your active inquiries, track rental applications, and communicate with landlords easily across <span className="text-indigo-600 dark:text-indigo-400 font-semibold">UrbanNest</span>.
+            Explore saved homes, manage your active inquiries, track rental applications, and communicate with landlords easily across <span className="text-amber-600 dark:text-amber-400 font-semibold">UrbanNest</span>.
           </p>
         </div>
       </motion.div>
@@ -142,8 +142,8 @@ export default function TenantDashboard() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mb-8 flex items-center gap-3"
         >
-          <div className="p-2.5 bg-indigo-500/10 dark:bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-            <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+          <div className="p-2.5 bg-amber-500/10 dark:bg-amber-500/10 rounded-xl border border-amber-500/20">
+            <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           </div>
           <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             Tenant Hub & Quick Actions
@@ -167,12 +167,12 @@ export default function TenantDashboard() {
                   "group relative cursor-pointer overflow-hidden rounded-2xl p-7 transition-all duration-300",
                   "bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-xl",
                   "border border-slate-200/80 dark:border-slate-800/60",
-                  "shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-black/60",
+                  "shadow-sm hover:shadow-xl hover:shadow-amber-500/10 dark:hover:shadow-black/60",
                   feature.hoverBorder
                 )}
               >
                 {/* Subtle Gradient Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-100/60 via-transparent to-indigo-50/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:from-white/5 dark:to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-100/60 via-transparent to-amber-50/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:from-white/5 dark:to-transparent" />
                 
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="mb-6 flex items-start justify-between">

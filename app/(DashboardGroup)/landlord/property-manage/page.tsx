@@ -1,5 +1,6 @@
+"use client";
+
 import React from "react";
-import Link from "next/link";
 import {
   Building2,
   Sparkles,
@@ -19,6 +20,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 // 🌟 Dummy Data based on your API Response Structure
 const MY_PROPERTIES = [
@@ -69,13 +78,36 @@ export default function LandlordPropertiesPage() {
           </div>
         </div>
 
-        {/* 🌟 Create Property Action */}
-        <Link href="/dashboard/landlord/properties/create">
-          <Button className="h-11 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
-            <Plus className="mr-2 h-5 w-5 stroke-[3]" />
-            Add New Property
-          </Button>
-        </Link>
+        {/* 🌟 Create Property Action (Modal Trigger) */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="h-11 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+              <Plus className="mr-2 h-5 w-5 stroke-[3]" />
+              Add New Property
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px] bg-white dark:bg-[#07090e] border-slate-200 dark:border-slate-800">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">Add New Property</DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400">
+                Fill in the details below to list a new property on the marketplace.
+              </DialogDescription>
+            </DialogHeader>
+            
+            {/* Create Form Placeholder */}
+            <div className="py-6 flex flex-col gap-4">
+              <div className="p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-400 text-sm">
+                [ Create Property Form Fields Will Go Here ]
+              </div>
+              <div className="flex justify-end gap-3 mt-4">
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800">Cancel</Button>
+                </DialogTrigger>
+                <Button className="rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 font-bold">Save Property</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* 🌟 Filter & Search Section */}
@@ -174,16 +206,44 @@ export default function LandlordPropertiesPage() {
                 </div>
               </div>
 
-              {/* 🌟 Action Buttons (Update & Delete) */}
+              {/* 🌟 Action Buttons (Update Modal & Delete) */}
               <div className="flex items-center gap-3 mt-5 pt-4 border-t border-slate-200/80 dark:border-slate-800/80">
-                <Button 
-                  variant="outline" 
-                  className="flex-1 h-10 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 font-bold text-xs transition-all duration-300 group/edit"
-                >
-                  <Edit3 className="w-4 h-4 mr-2 group-hover/edit:scale-110 transition-transform" /> 
-                  Update
-                </Button>
                 
+                {/* Update Modal Trigger */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 h-10 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 hover:border-amber-500 font-bold text-xs transition-all duration-300 group/edit"
+                    >
+                      <Edit3 className="w-4 h-4 mr-2 group-hover/edit:scale-110 transition-transform" /> 
+                      Update
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px] bg-white dark:bg-[#07090e] border-slate-200 dark:border-slate-800">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">Update Property</DialogTitle>
+                      <DialogDescription className="text-slate-500 dark:text-slate-400">
+                        Update the details for <span className="font-semibold text-slate-700 dark:text-slate-300">{property.title}</span>.
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    {/* Update Form Placeholder */}
+                    <div className="py-6 flex flex-col gap-4">
+                      <div className="p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-400 text-sm">
+                        [ Update Form Fields Will Go Here ]
+                      </div>
+                      <div className="flex justify-end gap-3 mt-4">
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="rounded-xl border-slate-200 dark:border-slate-800">Cancel</Button>
+                        </DialogTrigger>
+                        <Button className="rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-600 font-bold">Save Changes</Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                
+                {/* Delete Button */}
                 <Button 
                   variant="outline" 
                   className="flex-1 h-10 rounded-xl border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500 font-bold text-xs transition-all duration-300 group/delete"
