@@ -6,11 +6,10 @@ type ResponseState = {
     success: boolean;
     statusCode?: number;
     message: string;
-    data?: unknown;
+    data?: unknown; // 🌟 any-এর পরিবর্তে unknown ব্যবহার করা হয়েছে
 };
 
-
-export async function getMyRentalRequest(): Promise<ResponseState> {
+export async function getRentalRequestDetails(id: string): Promise<ResponseState> {
     try {
         const cookieStore = await cookies();
         const accessToken = cookieStore.get("accessToken")?.value;
@@ -38,18 +37,17 @@ export async function getMyRentalRequest(): Promise<ResponseState> {
         } catch (e) {
             return {
                 success: res.ok,
-                message: textResponse || "Rental requests fetched successfully.",
+                message: textResponse || "Rental request fetched successfully.",
                 data: textResponse,
             };
         }
 
         return result;
     } catch (error) {
-        console.error("Get rental requests error:", error);
+        console.error("Get rental request details error:", error);
         return {
             success: false,
-            message: "Something went wrong while fetching requests.",
+            message: "Something went wrong while fetching request details.",
         };
     }
 }
-

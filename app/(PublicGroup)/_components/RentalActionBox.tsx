@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useTransition, useEffect } from "react";
+import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { CreditCard, ShieldCheck } from "lucide-react";
 import { createRentalRequestAction } from "../_action/rentalAction";
+import { pay } from "../_action/payments";
 
 interface Landlord {
   name?: string;
@@ -16,6 +17,7 @@ interface RentalActionBoxProps {
   price: number;
   landlord?: Landlord | string;
   initialStatus?: string;
+  rentalRequestId?: string | null; 
 }
 
 export default function RentalActionBox({
@@ -23,22 +25,11 @@ export default function RentalActionBox({
   price,
   landlord,
   initialStatus = "",
+  rentalRequestId, // 🌟 ২. প্রপটি রিসিভ করা হলো
 }: RentalActionBoxProps) {
   const [isPending, startTransition] = useTransition();
+  const [isPaymentPending, startPaymentTransition] = useTransition();
   const [requestStatus, setRequestStatus] = useState<string>(initialStatus);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // পেজ লোড হওয়ার পর লোকাল স্টোরেজ চেক করবে
-  useEffect(() => {
-    setIsMounted(true);
-    // যদি ব্যাকএন্ড থেকে কোনো স্ট্যাটাস না আসে, তবে লোকাল স্টোরেজ চেক করবে
-    if (!initialStatus) {
-      const savedStatus = localStorage.getItem(`rental_status_${propertyId}`);
-      if (savedStatus) {
-        setRequestStatus(savedStatus);
-      }
-    }
-  }, [propertyId, initialStatus]);
 
   const handleRentalRequest = () => {
     startTransition(async () => {
@@ -52,11 +43,26 @@ export default function RentalActionBox({
       
       if (result.success) {
         setRequestStatus("PENDING");
-        // সফল হলে লোকাল স্টোরেজে সেভ করে রাখা হচ্ছে
-        localStorage.setItem(`rental_status_${propertyId}`, "PENDING"); 
         alert(result.message || "Rental request submitted successfully!");
       } else {
         alert(result.message || "Failed to submit rental request.");
+      }
+    });
+  };
+
+  // 🌟 পেমেন্ট বাটনে ক্লিক করলে এই ফাংশন কাজ করবে
+  const handlePayment = () => {
+    // আইডি না থাকলে কলই হবে না
+    if (!rentalRequestId) {
+      alert("Error: Rental Request ID is missing!");
+      return;
+    }
+
+    startPaymentTransition(async () => {
+      // 🌟 ৩. pay ফাংশনে rentalRequestId পাস করা হলো
+      const result = await pay(rentalRequestId); 
+      if (result && !result.success) {
+        alert(result.message || "Something went wrong with payment.");
       }
     });
   };
@@ -72,10 +78,7 @@ export default function RentalActionBox({
     }
   }
 
-  // Hydration Error এড়াতে কম্পোনেন্ট মাউন্ট হওয়ার আগে কিছুই রেন্ডার করবে না
-  if (!isMounted) return <div className="h-[400px] w-full animate-pulse bg-slate-100 dark:bg-slate-800 rounded-3xl"></div>;
-
-  const currentStatus = requestStatus.toUpperCase();
+  const currentStatus = (initialStatus || requestStatus).toUpperCase();
 
   return (
     <div className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-6">
@@ -83,7 +86,7 @@ export default function RentalActionBox({
       {/* Price Tag */}
       <div className="flex items-baseline justify-between pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Monthly Rent</span>
+          <span className="xsmall text-xs font-bold text-slate-400 uppercase tracking-wider">Monthly Rent</span>
           <h2 className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
             ৳{Number(price || 0).toLocaleString()}
           </h2>
@@ -112,9 +115,15 @@ export default function RentalActionBox({
             <div className="w-full h-12 flex items-center justify-center rounded-2xl bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border border-emerald-600/20 font-extrabold text-xs">
               ✓ Request Approved by Landlord
             </div>
-            <Button className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm">
+            
+            {/* Proceed to Payment Button */}
+            <Button 
+              onClick={handlePayment}
+              disabled={isPaymentPending || !rentalRequestId}
+              className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm disabled:opacity-50"
+            >
               <CreditCard className="w-5 h-5 mr-2 stroke-[2.5]" />
-              Proceed to Payment
+              {isPaymentPending ? "Redirecting to Payment..." : "Proceed to Payment"}
             </Button>
           </>
         ) : currentStatus === "PENDING" || currentStatus === "REQUESTED" ? (
@@ -122,7 +131,12 @@ export default function RentalActionBox({
             ⏳ Rental Request Pending...
           </Button>
         ) : (
-          <Button onClick={handleRentalRequest} disabled={isPending} variant="outline" className="w-full h-14 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-extrabold hover:bg-slate-800 dark:hover:bg-slate-200 text-sm disabled:opacity-50 transition-all duration-300">
+          <Button 
+            onClick={handleRentalRequest} 
+            disabled={isPending} 
+            variant="outline" 
+            className="w-full h-14 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-extrabold hover:bg-slate-800 dark:hover:bg-slate-200 text-sm disabled:opacity-50 transition-all duration-300"
+          >
             {isPending ? "Submitting..." : "Submit Rental Request"}
           </Button>
         )}

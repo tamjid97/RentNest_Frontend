@@ -7,14 +7,11 @@ import {
   Bed,
   Bath,
   Maximize2,
-  ShieldCheck,
-  CreditCard,
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPropertyById } from "../../_action/propertyAction";
 import RentalActionBox from "../../_components/RentalActionBox";
-
 
 // 🛠️ Interfaces matching your exact backend response
 interface Landlord {
@@ -50,6 +47,13 @@ interface PropertyData {
   baths?: number;
   sqft?: number | string;
   image?: string;
+  status?: string;
+  currentUserRequestStatus?: string;
+  rentalRequestId?: string; // 🌟 টাইপস্ক্রিপ্ট এরর দূর করতে এটি যোগ করা হয়েছে
+  myRequest?: { status?: string; id?: string; [key: string]: unknown };
+  rentalRequest?: { status?: string; id?: string; [key: string]: unknown };
+  rentalRequests?: Array<{ status?: string; id?: string; [key: string]: unknown }>;
+  requests?: Array<{ status?: string; id?: string; [key: string]: unknown }>;
   [key: string]: unknown;
 }
 
@@ -76,6 +80,60 @@ const renderValue = (value: unknown, fallback: string = ""): string => {
   return fallback;
 };
 
+// 🛠️ Robust helper to extract status
+const getStatusFromProperty = (prop: PropertyData): string => {
+  if (typeof prop.status === "string" && prop.status.trim() !== "") {
+    return prop.status;
+  }
+  if (typeof prop.currentUserRequestStatus === "string" && prop.currentUserRequestStatus.trim() !== "") {
+    return prop.currentUserRequestStatus;
+  }
+  if (prop.myRequest && typeof prop.myRequest.status === "string") {
+    return prop.myRequest.status;
+  }
+  if (prop.rentalRequest && typeof prop.rentalRequest.status === "string") {
+    return prop.rentalRequest.status;
+  }
+  
+  const reqs = prop.rentalRequests || prop.requests;
+  if (Array.isArray(reqs) && reqs.length > 0 && reqs[0]?.status) {
+    return String(reqs[0].status);
+  }
+
+  return "";
+};
+
+// 🛠️ Updated helper to extract rental request ID (checks both id and _id)
+const getRequestIdFromProperty = (prop: PropertyData): string => {
+  if (typeof prop.rentalRequestId === "string") {
+    return prop.rentalRequestId;
+  }
+  if (prop.requestId && typeof prop.requestId === "string") {
+    return prop.requestId;
+  }
+  
+  // Check myRequest
+  if (prop.myRequest) {
+    if (typeof prop.myRequest.id === "string") return prop.myRequest.id;
+    if (typeof prop.myRequest._id === "string") return prop.myRequest._id;
+  }
+  
+  // Check rentalRequest
+  if (prop.rentalRequest) {
+    if (typeof prop.rentalRequest.id === "string") return prop.rentalRequest.id;
+    if (typeof prop.rentalRequest._id === "string") return prop.rentalRequest._id;
+  }
+  
+  // Check arrays (rentalRequests or requests)
+  const reqs = prop.rentalRequests || prop.requests;
+  if (Array.isArray(reqs) && reqs.length > 0) {
+    const firstReq = reqs[0] as Record<string, unknown>;
+    if (typeof firstReq?.id === "string") return firstReq.id;
+    if (typeof firstReq?._id === "string") return firstReq._id;
+  }
+
+  return ""; 
+};
 export default async function PropertyDetailsPage({
   params,
 }: {
@@ -130,6 +188,10 @@ export default async function PropertyDetailsPage({
     typeof property.image === "string" && property.image.trim() !== ""
       ? property.image
       : "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop";
+
+  // 🌟 Safe extraction of status and request ID
+  const currentStatus = getStatusFromProperty(property);
+  const currentRentalRequestId = getRequestIdFromProperty(property); // হেল্পার ফাংশন এখানে কল করা হয়েছে
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#04060a] text-slate-900 dark:text-slate-100 pb-20">
@@ -233,15 +295,15 @@ export default async function PropertyDetailsPage({
             </div>
           </div>
 
-     {/* Right Side: Pricing & Payment Box */}
+         {/* Right Side: Action Box Component */}
           <div className="lg:col-span-4 sticky top-6">
             <RentalActionBox
-              propertyId={property.id || ""}
-              price={typeof property.price === "number" ? property.price : 0}
-              landlord={property.landlord}
-              // ব্যাকএন্ড থেকে আসা স্ট্যাটাসটি এখানে পাস করুন।
-              // উদাহরণস্বরূপ: property.currentUserRequestStatus (ব্যাকএন্ড রেসপন্স অনুযায়ী নাম পরিবর্তন করুন)
-              initialStatus={typeof property.currentUserRequestStatus === "string" ? property.currentUserRequestStatus : ""}
+              propertyId={property?.id || ""}
+              price={Number(property?.price || 0)}
+              landlord={property?.landlord}
+              initialStatus={currentStatus}
+              // 🌟 ভেরিয়েবলটি এখানে পাস করা হয়েছে, টাইপস্ক্রিপ্ট এরর আর আসবে না
+              rentalRequestId={currentRentalRequestId} 
             />
           </div>
 

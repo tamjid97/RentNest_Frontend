@@ -20,11 +20,12 @@ const handleApiResponse = async (res: Response) => {
     return await res.json();
 };
 
-
 export const getProperty = async () => {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value || null;
     
+    console.log("Next.js Server Action - Token in getProperty:", accessToken);
+
     if (!accessToken) {
         return {
             success: false,
@@ -51,13 +52,15 @@ export const getProperty = async () => {
     }
 };
 
-
-// 🌟 নতুন যোগ করা হলো: নির্দিষ্ট আইডি দিয়ে প্রপার্টির ডিটেইলস আনার জন্য
 export const getPropertyById = async (id: string) => {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value || null;
     
+    // 🔍 টোকেন পাওয়া যাচ্ছে কি না চেক করার জন্য
+    console.log(">>> getPropertyById - Token found:", accessToken);
+
     if (!accessToken) {
+        console.log(">>> getPropertyById - No access token found in cookies!");
         return {
             success: false,
             message: "User not logged in!",
@@ -70,10 +73,14 @@ export const getPropertyById = async (id: string) => {
             headers: {
                 Cookie: `accessToken=${accessToken}`
             },
-            cache: "no-store" // ডিটেইলস পেজে লেটেস্ট ডেটা পাওয়ার জন্য ক্যাশ বন্ধ রাখা ভালো
+            cache: "no-store" // ডিটেইলস পেজে লেটেস্ট ডেটা পাওয়ার জন্য ক্যাশ বন্ধ রাখা
         });
 
         const result = await handleApiResponse(res);
+        
+        // 🔍 ব্যাকএন্ড থেকে পুরো ডেটা অবজেক্ট কী আসছে তা টার্মিনালে প্রিন্ট করার জন্য
+        console.log(">>> getPropertyById - Backend Response:", JSON.stringify(result, null, 2));
+
         return result;
     } catch (error) {
         console.error("Get property by ID Error:", error);
