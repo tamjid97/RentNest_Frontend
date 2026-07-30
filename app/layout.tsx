@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/shared/navbar";
-import { Footer } from "@/components/shared/footer";
+
+
 import { Providers } from "./providers"; 
 import { Toaster } from "@/components/ui/sonner";
 import { getMe } from "@/components/service/getMe";
@@ -34,12 +34,12 @@ export default async function RootLayout({
       <body className="font-sans antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen transition-colors duration-300">
         <Providers>
           
-          <Navbar user={user} /> 
+          
           <main className="flex-grow">
             {children}
             <Toaster position="top-right" />
           </main>
-          <Footer />
+          
         </Providers>
       </body>
     </html>
