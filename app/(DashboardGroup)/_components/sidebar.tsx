@@ -3,7 +3,7 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { LogOut, Menu, Home } from "lucide-react"
 
@@ -18,12 +18,16 @@ import {
 import type { ISidebarItem, NavbarProps } from "@/lib/type"
 import { sidebarMenuItems } from "../_config/sidebarManuitems"
 
+import { toast } from "sonner"
+import { logout } from "@/components/service/logout"
+
 interface SidebarContentProps extends NavbarProps {
   pathname: string;
   setOpen?: (open: boolean) => void;
 }
 
 export default function SidebarContent({ user, pathname, setOpen }: SidebarContentProps) {
+  const router = useRouter();
   let navItems: ISidebarItem[] = [];
 
   const role = user?.data?.profile?.role;
@@ -35,6 +39,12 @@ export default function SidebarContent({ user, pathname, setOpen }: SidebarConte
   } else if (role === "ADMIN") {
     navItems = sidebarMenuItems.ADMIN;
   }
+
+  const handleLogout = async () => {
+    await logout();
+    toast.success("User Logged Out Successfully!");
+    router.push("/login");
+  };
 
   return (
     <div className="flex flex-col h-full w-full justify-between bg-white dark:bg-[#07090e] border-r border-slate-200 dark:border-slate-800/80">
@@ -106,7 +116,8 @@ export default function SidebarContent({ user, pathname, setOpen }: SidebarConte
       <div className="border-t border-slate-200/80 p-4 dark:border-slate-800/80 shrink-0">
         <Button 
           variant="ghost" 
-          className="w-full justify-start rounded-xl text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-300 font-medium"
+          onClick={handleLogout}
+          className="w-full justify-start rounded-xl text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-300 font-medium cursor-pointer"
         >
           <LogOut className="mr-3 h-5 w-5 shrink-0" />
           Logout

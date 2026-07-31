@@ -95,7 +95,7 @@ export default function PublicPropertiesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  // 🏷️ সেফলি ইউনিক ক্যাটাগরি লিস্ট তৈরি (এখানেই সমস্যা ছিল, এখন ঠিক করা হলো)
+  // 🏷️ সেফলি ইউনিক ক্যাটাগরি লিস্ট তৈরি
   const uniqueCategories = Array.isArray(properties)
     ? (Array.from(
         new Set(properties.map((p) => p?.category?.name).filter(Boolean))
@@ -191,9 +191,9 @@ export default function PublicPropertiesPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden p-3 flex flex-col justify-between">
-                <Skeleton className="h-60 w-full rounded-[20px]" />
-                <div className="p-4 space-y-4">
+              <div key={n} className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden flex flex-col justify-between">
+                <Skeleton className="h-60 w-full rounded-none" />
+                <div className="p-6 space-y-4">
                   <div className="space-y-2.5">
                     <Skeleton className="h-4 w-1/3" />
                     <Skeleton className="h-6 w-3/4" />
@@ -202,20 +202,11 @@ export default function PublicPropertiesPage() {
                     <Skeleton className="h-3.5 w-full" />
                     <Skeleton className="h-3.5 w-5/6" />
                   </div>
-                  <div className="flex gap-2 pt-1">
-                    <Skeleton className="h-6 w-16 rounded-lg" />
-                    <Skeleton className="h-6 w-20 rounded-lg" />
-                  </div>
                 </div>
-                <div className="p-4 pt-0 space-y-4">
+                <div className="p-6 pt-0">
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="w-8 h-8 rounded-full" />
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-3 w-16" />
-                        <Skeleton className="h-4 w-24" />
-                      </div>
-                    </div>
+                    <Skeleton className="h-8 w-24" />
+                    <Skeleton className="h-10 w-28 rounded-2xl" />
                   </div>
                 </div>
               </div>
@@ -235,23 +226,24 @@ export default function PublicPropertiesPage() {
                 className="group relative bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5 hover:border-amber-500/40 transition-all duration-500 flex flex-col justify-between"
               >
                 <div>
-                  <div className="relative h-60 w-full overflow-hidden bg-slate-100 dark:bg-slate-900 p-2">
+                  {/* ✅ বর্ডারহীন ফুল-উইডথ ইমেজ সেকশন */}
+                  <div className="relative h-60 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
                     <img
                       src={property.image}
                       alt={property.title}
-                      className="w-full h-full object-cover rounded-[20px] group-hover:scale-105 transition-transform duration-700 ease-out"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
                     
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none rounded-[20px] m-2" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
 
-                    <div className="absolute top-5 left-5">
+                    <div className="absolute top-4 left-4">
                       <span className="px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/60 backdrop-blur-md text-amber-400 border border-white/10 flex items-center gap-1.5 shadow-lg">
                         <Tag className="w-3 h-3 text-amber-400" />
                         {property.category?.name || "Luxury"}
                       </span>
                     </div>
 
-                    <div className="absolute bottom-5 left-5">
+                    <div className="absolute bottom-4 left-4">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase backdrop-blur-md border shadow-lg flex items-center gap-1 ${
                           property.isAvailable === "AVAILABLE"
