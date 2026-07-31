@@ -28,12 +28,13 @@ import {
 import type { NavbarProps } from "@/lib/type";
 import { logout } from "../service/logout";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation"; // 'next/router' এর বদলে 'next/navigation' হবে
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 // UserDropdown কম্পোনেন্ট Navbar-এর বাইরে রাখা হয়েছে
 function UserDropdown({ user }: NavbarProps) {
   const userRole = user?.data?.profile?.role;
+  const profilePhoto = user?.data?.profile?.profilePhoto; // ইউজারের প্রোফাইল ছবির লিংক
 
   let dashboardUrl = "/";
   if (userRole === "TENANT") {
@@ -53,16 +54,28 @@ function UserDropdown({ user }: NavbarProps) {
     }
   };
 
-  // return এর ভেতরের সিনট্যাক্স এরর ঠিক করা হয়েছে এবং user?.success দেওয়া হয়েছে
   return user?.success ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="group flex items-center gap-2 md:gap-3 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent dark:to-slate-900 p-1 md:pr-3 transition-all duration-300 hover:border-amber-400 focus:outline-none"
+          className="group flex items-center gap-2 md:gap-3 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent dark:to-slate-900 p-1 md:pr-3 transition-all duration-300 hover:border-amber-400 focus:outline-none cursor-pointer"
           aria-label="User menu"
         >
-          <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-extrabold shadow-md">
-            R
+          {/* প্রফাইল ছবি অথবা ডিফল্ট লেটার */}
+          <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-extrabold shadow-md">
+            {profilePhoto ? (
+              <img
+                src={profilePhoto}
+                alt="Profile"
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  // ছবি লোড না হলে ফলব্যাক হিসেবে প্রথম অক্ষর দেখাবে
+                  (e.target as HTMLElement).style.display = "none";
+                }}
+              />
+            ) : (
+              <span>R</span>
+            )}
           </div>
           <div className="hidden md:flex flex-col items-start text-left">
             <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors">
@@ -119,7 +132,7 @@ function UserDropdown({ user }: NavbarProps) {
     </DropdownMenu>
   ) : (
     <Link href="/login">
-      <Button>login</Button>
+      <Button>Login</Button>
     </Link>
   );
 }
@@ -183,7 +196,7 @@ export function Navbar({ user }: NavbarProps) {
           <div className="hidden md:flex items-center gap-4">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400 transition-all duration-300 hover:border-amber-400 hover:scale-105 shadow-sm"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400 transition-all duration-300 hover:border-amber-400 hover:scale-105 shadow-sm cursor-pointer"
               title="Toggle Theme"
             >
               <Sun className="h-5 w-5 hidden dark:block text-amber-400" />
@@ -198,7 +211,7 @@ export function Navbar({ user }: NavbarProps) {
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400 cursor-pointer"
             >
               <Sun className="h-4 w-4 hidden dark:block text-amber-400" />
               <Moon className="h-4 w-4 block dark:hidden text-slate-700" />
@@ -209,7 +222,7 @@ export function Navbar({ user }: NavbarProps) {
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 p-2 text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-amber-600 dark:hover:text-amber-400"
+              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 p-2 text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-amber-600 dark:hover:text-amber-400 cursor-pointer"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
