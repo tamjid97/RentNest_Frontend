@@ -15,6 +15,7 @@ import {
   Sun,
   Moon,
   ChartBarStacked,
+  User,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -85,17 +86,22 @@ function UserDropdown({ user }: NavbarProps) {
 
         <DropdownMenuItem asChild>
           <Link
+            href="/profile"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400 focus:bg-amber-500/10"
+          >
+            <User className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+            <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link
             href={dashboardUrl}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400 focus:bg-amber-500/10"
           >
             <LayoutDashboard className="h-4 w-4 text-amber-500 dark:text-amber-400" />
             <span>Dashboard</span>
           </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400 focus:bg-amber-500/10">
-          <Settings className="h-4 w-4 text-amber-500 dark:text-amber-400" />
-          <span>Settings</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-800" />
@@ -126,8 +132,7 @@ export function Navbar({ user }: NavbarProps) {
     { label: "Home", href: "/", icon: Home },
     { label: "Properties", href: "/properties", icon: Building2 },
     { label: "Categories", href: "/categories", icon: ChartBarStacked },
-    { label: "How it Works", href: "/how-it-works", icon: HelpCircle },
-    
+    { label: "How it Works", href: "/how-it-work", icon: HelpCircle },
   ];
 
   return (

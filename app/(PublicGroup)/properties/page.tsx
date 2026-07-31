@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Tag,
   Check,
-  SlidersHorizontal,
   ShieldCheck,
   Building,
 } from "lucide-react";
@@ -46,6 +45,10 @@ interface ISproperty {
 export default function PublicPropertiesPage() {
   const [properties, setProperties] = useState<ISproperty[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  
+  // সার্চ এবং ফিল্টারিং স্টেট
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -63,6 +66,25 @@ export default function PublicPropertiesPage() {
 
     fetchProperties();
   }, []);
+
+  // ইউনিক ক্যাটাগরি লিস্ট তৈরি করা ডাইনামিকভাবে
+  const uniqueCategories = Array.from(
+    new Set(properties.map((p) => p.category?.name).filter(Boolean))
+  );
+
+  // সার্চ এবং ক্যাটাগরি অনুযায়ী প্রপার্টি ফিল্টার করার লজিক
+  const filteredProperties = properties.filter((property) => {
+    const matchesSearch =
+      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "ALL" ||
+      property.category?.name?.toLowerCase() === selectedCategory.toLowerCase();
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 pb-20 selection:bg-amber-500 selection:text-black">
@@ -88,21 +110,20 @@ export default function PublicPropertiesPage() {
             Curated selection of verified luxury apartments, duplexes, and suites available for instant rental booking.
           </p>
 
+          {/* Functional Search Bar */}
           <div className="max-w-3xl mx-auto mt-10 p-2 sm:p-2.5 rounded-2xl sm:rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-slate-300/40 dark:shadow-amber-500/5 flex flex-col sm:flex-row items-center gap-2 transition-all">
             <div className="relative w-full flex items-center pl-3">
               <Search className="w-5 h-5 text-amber-500 shrink-0" />
               <Input
                 type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by city, neighborhood, or property title..."
                 className="h-11 border-0 bg-transparent text-sm font-medium focus-visible:ring-0 shadow-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button variant="ghost" className="hidden sm:flex h-11 px-4 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-amber-500" /> Filters
-              </Button>
-
               <Button className="w-full sm:w-auto h-11 px-8 rounded-xl sm:rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:opacity-95 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all duration-300">
                 Find Places
               </Button>
@@ -114,55 +135,62 @@ export default function PublicPropertiesPage() {
       {/* 🌟 Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-8">
         
+        {/* Dynamic Category Filter Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60 dark:border-slate-800/60">
           <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
-            <Button className="h-9 px-5 rounded-full bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-xs font-bold shadow-sm">
+            <Button
+              onClick={() => setSelectedCategory("ALL")}
+              className={`h-9 px-5 rounded-full text-xs font-bold shadow-sm transition-all ${
+                selectedCategory === "ALL"
+                  ? "bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950"
+                  : "bg-transparent text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800/80"
+              }`}
+            >
               All Properties
             </Button>
-            <Button variant="outline" className="h-9 px-5 rounded-full border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-medium">
-              Duplex
-            </Button>
-            <Button variant="outline" className="h-9 px-5 rounded-full border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-medium">
-              Apartments
-            </Button>
+
+            {uniqueCategories.map((catName) => (
+              <Button
+                key={catName}
+                onClick={() => setSelectedCategory(catName)}
+                variant={selectedCategory === catName ? "default" : "outline"}
+                className={`h-9 px-5 rounded-full text-xs font-medium transition-all ${
+                  selectedCategory === catName
+                    ? "bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 font-bold border-transparent"
+                    : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80"
+                }`}
+              >
+                {catName}
+              </Button>
+            ))}
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-semibold">
             <Building className="w-4 h-4 text-amber-500" />
-            <span>Showing {loading ? "..." : properties.length} Available Listings</span>
+            <span>Showing {loading ? "..." : filteredProperties.length} Available Listings</span>
           </div>
         </div>
 
-        {/* 🌟 Shadcn Skeleton Loader */}
+        {/* Shadcn Skeleton Loader */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <div key={n} className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden p-3 flex flex-col justify-between">
-                {/* Image Skeleton */}
                 <Skeleton className="h-60 w-full rounded-[20px]" />
-                
                 <div className="p-4 space-y-4">
-                  {/* Title & Location Skeleton */}
                   <div className="space-y-2.5">
                     <Skeleton className="h-4 w-1/3" />
                     <Skeleton className="h-6 w-3/4" />
                   </div>
-
-                  {/* Description Skeleton */}
                   <div className="space-y-2">
                     <Skeleton className="h-3.5 w-full" />
                     <Skeleton className="h-3.5 w-5/6" />
                   </div>
-
-                  {/* Amenities Badges Skeleton */}
                   <div className="flex gap-2 pt-1">
                     <Skeleton className="h-6 w-16 rounded-lg" />
                     <Skeleton className="h-6 w-20 rounded-lg" />
-                    <Skeleton className="h-6 w-16 rounded-lg" />
                   </div>
                 </div>
-
-                {/* Footer Skeleton */}
                 <div className="p-4 pt-0 space-y-4">
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/80">
                     <div className="flex items-center gap-3">
@@ -173,26 +201,19 @@ export default function PublicPropertiesPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="space-y-1.5">
-                      <Skeleton className="h-3 w-12" />
-                      <Skeleton className="h-7 w-24" />
-                    </div>
-                    <Skeleton className="h-11 w-32 rounded-2xl" />
-                  </div>
                 </div>
               </div>
             ))}
           </div>
-        ) : properties.length === 0 ? (
+        ) : filteredProperties.length === 0 ? (
           <div className="text-center py-24 bg-white dark:bg-[#07090e] rounded-3xl border border-slate-200 dark:border-slate-800">
             <Building className="w-12 h-12 mx-auto text-amber-500/50 mb-3" />
             <h3 className="text-lg font-bold">No Properties Found</h3>
-            <p className="text-xs text-slate-500 mt-1">Please check back later for new exclusive listings.</p>
+            <p className="text-xs text-slate-500 mt-1">Try adjusting your search query or category filters.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map((property) => (
+            {filteredProperties.map((property) => (
               <div
                 key={property.id}
                 className="group relative bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5 hover:border-amber-500/40 transition-all duration-500 flex flex-col justify-between"
@@ -301,7 +322,7 @@ export default function PublicPropertiesPage() {
 
         {/* Footer */}
         <div className="p-5 bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
-          <span>Displaying total {properties.length} verified listings</span>
+          <span>Displaying total {filteredProperties.length} verified listings</span>
           <div className="flex items-center gap-2">
             <Button size="icon" variant="outline" disabled className="h-9 w-9 rounded-xl border-slate-200 dark:border-slate-800">
               <ChevronLeft className="w-4 h-4" />

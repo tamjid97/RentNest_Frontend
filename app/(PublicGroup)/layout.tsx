@@ -17,6 +17,7 @@ export default async function PublicLayout({
       <main className="flex-1 w-full pb-0 overflow-hidden">
         {children}
       </main>
+      
 
       <Footer />
     </div>

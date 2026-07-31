@@ -1,11 +1,26 @@
 'use client'
 
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { Home, Mail, Send, Shield, Sparkles, ArrowRight, Globe, Code, Share2, MessageSquare } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { toast } from 'sonner'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const [email, setEmail] = useState('')
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!email.trim()) {
+      toast.error('Please enter a valid email address!')
+      return
+    }
+
+    toast.success('Subscribed Successfully!')
+    setEmail('') // ইনপুট ফিল্ড খালি করা
+  }
 
   return (
     <footer className="relative border-t border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#030712] text-slate-600 dark:text-slate-400 overflow-hidden transition-colors duration-300">
@@ -45,16 +60,18 @@ export function Footer() {
               </p>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 className="flex-1 rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 px-5 py-4 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-amber-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all shadow-sm"
                 required
               />
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 px-7 py-4 text-sm font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-[1.02] transition-all duration-300 active:scale-95"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-amber-300 via-amber-400 to-amber-600 px-7 py-4 text-sm font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-[1.02] transition-all duration-300 active:scale-95 cursor-pointer"
               >
                 <span>Subscribe</span>
                 <ArrowRight className="h-4 w-4 stroke-[2.5]" />
