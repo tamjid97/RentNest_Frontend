@@ -54,11 +54,21 @@ export default function PublicPropertiesPage() {
     const fetchProperties = async () => {
       try {
         const response = await getProperty();
-        if (response.success && response.data) {
+        
+        console.log("Property Action Response:", response);
+
+        if (Array.isArray(response)) {
+          setProperties(response);
+        } else if (response?.success && Array.isArray(response?.data)) {
           setProperties(response.data);
+        } else if (Array.isArray(response?.data)) {
+          setProperties(response.data);
+        } else {
+          setProperties([]);
         }
       } catch (error) {
         console.error("Failed to fetch properties:", error);
+        setProperties([]);
       } finally {
         setLoading(false);
       }
@@ -67,24 +77,30 @@ export default function PublicPropertiesPage() {
     fetchProperties();
   }, []);
 
-  // ইউনিক ক্যাটাগরি লিস্ট তৈরি করা ডাইনামিকভাবে
-  const uniqueCategories = Array.from(
-    new Set(properties.map((p) => p.category?.name).filter(Boolean))
-  );
-
-  // সার্চ এবং ক্যাটাগরি অনুযায়ী প্রপার্টি ফিল্টার করার লজিক
+  // 🛡️ নিরাপদ সার্চ ও ক্যাটাগরি ফিল্টারিং (Null/Undefined হ্যান্ডেল করা হয়েছে)
   const filteredProperties = properties.filter((property) => {
+    const title = property?.title || "";
+    const location = property?.location || "";
+    const description = property?.description || "";
+
     const matchesSearch =
-      property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.description.toLowerCase().includes(searchTerm.toLowerCase());
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      description.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesCategory =
       selectedCategory === "ALL" ||
-      property.category?.name?.toLowerCase() === selectedCategory.toLowerCase();
+      property?.category?.name?.toLowerCase() === selectedCategory.toLowerCase();
 
     return matchesSearch && matchesCategory;
   });
+
+  // 🏷️ সেফলি ইউনিক ক্যাটাগরি লিস্ট তৈরি (এখানেই সমস্যা ছিল, এখন ঠিক করা হলো)
+  const uniqueCategories = Array.isArray(properties)
+    ? (Array.from(
+        new Set(properties.map((p) => p?.category?.name).filter(Boolean))
+      ) as string[])
+    : [];
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 pb-20 selection:bg-amber-500 selection:text-black">

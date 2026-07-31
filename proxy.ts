@@ -94,6 +94,10 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/((?!api|_next/static|favicon.ico|_next/image|.*\\.png$).*)'
+        /* 
+          ✅ এখানে (png|svg|...) এর পরিবর্তে অ-ক্যাপচারিং গ্রুপ (?:png|svg|...) ব্যবহার করা হয়েছে 
+          যাতে Next.js কোনো এরর না দেয়।
+        */
+        '/((?!api|_next/static|favicon.ico|_next/image|.*\\.(?:png|svg|jpg|jpeg|webp|gif)$).*)',
     ],
 }

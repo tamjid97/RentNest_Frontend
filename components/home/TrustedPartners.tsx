@@ -9,25 +9,25 @@ type Partner = {
 }
 
 const rowOnePartners: Partner[] = [
-  { name: "Visa", src: "/logos/visa (1).svg" },
-  { name: "Mastercard", src: "/logos/mastercard (1).svg" },
-  { name: "PayPal", src: "/logos/paypal (1).svg" },
-  { name: "Stripe", src: "/logos/stripe (1).svg" },
-  { name: "Apple Pay", src: "/logos/apple-pay (1).svg" },
-  { name: "Google Pay", src: "/logos/google-pay (1).svg" },
-  { name: "Chase", src: "/logos/chase (1).svg" },
-  { name: "HSBC", src: "/logos/hsbc (1).svg" },
+  { name: "Visa", src: "/logos/visa.svg" },
+  { name: "Mastercard", src: "/logos/mastercard.svg" },
+  { name: "PayPal", src: "/logos/paypal.svg" },
+  { name: "Stripe", src: "/logos/stripe.svg" },
+  { name: "Apple Pay", src: "/logos/apple-pay.svg" },
+  { name: "Google Pay", src: "/logos/google-pay.svg" },
+  { name: "Chase", src: "/logos/chase.svg" },
+  { name: "HSBC", src: "/logos/hsbc.svg" },
 ]
 
 const rowTwoPartners: Partner[] = [
-  { name: "Apple Pay", src: "/logos/apple-pay (1).svg" },
-  { name: "Google Pay", src: "/logos/google-pay (1).svg" },
-  { name: "Chase", src: "/logos/chase (1).svg" },
-  { name: "HSBC", src: "/logos/hsbc (1).svg" },
-  { name: "Visa", src: "/logos/visa (1).svg" },
-  { name: "Mastercard", src: "/logos/mastercard (1).svg" },
-  { name: "PayPal", src: "/logos/paypal (1).svg" },
-  { name: "Stripe", src: "/logos/stripe (1).svg" },
+  { name: "Apple Pay", src: "/logos/apple-pay.svg" },
+  { name: "Google Pay", src: "/logos/google-pay.svg" },
+  { name: "Chase", src: "/logos/chase.svg" },
+  { name: "HSBC", src: "/logos/hsbc.svg" },
+  { name: "Visa", src: "/logos/visa.svg" },
+  { name: "Mastercard", src: "/logos/mastercard.svg" },
+  { name: "PayPal", src: "/logos/paypal.svg" },
+  { name: "Stripe", src: "/logos/stripe.svg" },
 ]
 
 function LogoCard({ partner }: { partner: Partner }) {
