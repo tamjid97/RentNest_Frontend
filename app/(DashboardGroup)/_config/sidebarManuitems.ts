@@ -26,8 +26,8 @@ export const LANDLORD_SIDEBAR_ITEMS : ISidebarItem[] = [
 
 export const ADMIN_SIDEBAR_ITEMS : ISidebarItem[] = [
   { label: "Admin Overview", href: "/admin", icon: LayoutDashboard },
-  { label: "All Properties", href: "/admin/propertieManage", icon: Building2 },
   { label: "Create Category", href: "/admin/creat-catagory", icon: SavePlus },
+  { label: "All Properties", href: "/admin/propertieManage", icon: Building2 },
   { label: "Manage Users", href: "/admin/userControl", icon: Users },
   { label: "Rental Requests", href: "/admin/rental-requests-get", icon: GitPullRequestClosed },
   
