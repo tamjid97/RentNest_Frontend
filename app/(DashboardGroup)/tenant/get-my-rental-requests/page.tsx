@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
+import Link from "next/link";
 import {
   ClipboardList,
   Sparkles,
@@ -14,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,20 +56,26 @@ export default function TenantRentalRequestsPage() {
   const [activeTab, setActiveTab] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 🌟 ২. fetchRequests ফাংশন (কোনো সিঙ্ক্রোনাস setState ছাড়া)
+  // 🌟 ২. fetchRequests ফাংশন (startTransition দিয়ে র‍্যাপ করা)
   const fetchRequests = async () => {
     try {
-      const result = await getMyRentalRequest(); // Tenant-এর সঠিক API Action
-      if (result?.success && Array.isArray(result.data)) {
-        setRequests(result.data as MyRentalRequest[]);
-      } else {
-        setRequests([]);
-      }
+      const result = await getMyRentalRequest();
+      startTransition(() => {
+        if (result?.success && Array.isArray(result.data)) {
+          setRequests(result.data as MyRentalRequest[]);
+        } else {
+          setRequests([]);
+        }
+      });
     } catch (error) {
       console.error("Failed to fetch requests:", error);
-      setRequests([]);
+      startTransition(() => {
+        setRequests([]);
+      });
     } finally {
-      setIsLoading(false); // async শেষ হওয়ার পর স্টেট আপডেট
+      startTransition(() => {
+        setIsLoading(false);
+      });
     }
   };
 
@@ -226,14 +234,15 @@ export default function TenantRentalRequestsPage() {
                 <th className="py-4 px-6">Landlord</th>
                 <th className="py-4 px-6">Rental Plan</th>
                 <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6 text-right">Applied Date</th>
+                <th className="py-4 px-6">Applied Date</th>
+                <th className="py-4 px-6 text-right">Action</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-slate-200/70 dark:divide-slate-800/70 text-sm">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-400 font-medium">
+                  <td colSpan={6} className="py-12 text-center text-slate-400 font-medium">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="w-5 h-5 animate-spin text-amber-500" />
                       Loading your requests...
@@ -242,7 +251,7 @@ export default function TenantRentalRequestsPage() {
                 </tr>
               ) : filteredRequests.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-400 font-medium">
+                  <td colSpan={6} className="py-12 text-center text-slate-400 font-medium">
                     No rental requests found.
                   </td>
                 </tr>
@@ -334,10 +343,23 @@ export default function TenantRentalRequestsPage() {
                       </td>
 
                       {/* Created Date */}
-                      <td className="py-4 px-6 text-right">
+                      <td className="py-4 px-6">
                         <span className="text-xs font-medium text-slate-400">
                           {formatDate(item.createdAt)}
                         </span>
+                      </td>
+
+                      {/* Details Action Button */}
+                      <td className="py-4 px-6 text-right">
+                        <Link href={`/tenant/get-my-rental-requests/${item.id}`}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-9 px-3 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all duration-200"
+                          >
+                            <Eye className="w-3.5 h-3.5 mr-1.5" /> Details
+                          </Button>
+                        </Link>
                       </td>
 
                     </tr>

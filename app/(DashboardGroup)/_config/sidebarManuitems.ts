@@ -5,17 +5,16 @@ import {
   LayoutDashboard,
   Users,
   MessageSquare,
-  ReceiptText,
-  UserStar,
   SavePlus,
   GitPullRequestClosed,
+  Receipt,
 } from "lucide-react";
 
 export const TENANT_SIDEBAR_ITEMS : ISidebarItem[] = [
   { label: "Overview", href: "/tenant", icon: LayoutDashboard },
   { label: "My Rental Requests", href: "/tenant/get-my-rental-requests", icon: Building2 },
-  { label: "Rental Request Details", href: "/tenant/Get-rental-request-details/id", icon:ReceiptText },
-  { label: "Create Review", href: "/tenant/create-review", icon: UserStar },
+  { label: "Payment History", href: "/tenant/payments", icon: Receipt },
+
 ];
 
 export const LANDLORD_SIDEBAR_ITEMS : ISidebarItem[] = [

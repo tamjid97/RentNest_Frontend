@@ -1,9 +1,8 @@
 import React from "react";
+import Link from "next/link";
 import {
   Receipt,
   Sparkles,
-  Search,
-  Download,
   Calendar,
   MapPin,
   CheckCircle2,
@@ -11,13 +10,11 @@ import {
   ChevronLeft,
   ChevronRight,
   CreditCard,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { getPaymentHistory } from "../_action/paymentPageAction";
 
-
-// 🌟 ১. TypeScript এর জন্য Payment Interface তৈরি করা হলো
 interface PropertyType {
   title: string;
   location: string;
@@ -37,7 +34,6 @@ interface PaymentType {
   rentalRequest: RentalRequestType;
 }
 
-// 🛠️ ডেট ফরম্যাট করার হেল্পার ফাংশন
 const formatDate = (dateString: string) => {
   if (!dateString) return "-";
   return new Date(dateString).toLocaleDateString("en-GB", {
@@ -58,14 +54,18 @@ const formatMonth = (dateString: string) => {
 export default async function TenantPaymentHistoryPage() {
   const response = await getPaymentHistory();
 
-  // 🌟 ২. 'any' এর বদলে PaymentType[] ব্যবহার করা হলো
   let payments: PaymentType[] = [];
-  
-  if (response?.success && response?.data) {
-    payments = Array.isArray(response.data) ? response.data : [response.data];
+
+  if (Array.isArray(response)) {
+    payments = response;
+  } else if (Array.isArray(response?.data)) {
+    payments = response.data;
+  } else if (Array.isArray(response?.data?.result)) {
+    payments = response.data.result;
+  } else if (response?.data && typeof response.data === "object") {
+    payments = [response.data];
   }
 
-  // 🌟 ৩. filter এবং reduce এর ভেতরে 'PaymentType' ডিফাইন করা হলো
   const totalPaid = payments
     .filter((p: PaymentType) => p.status === "PAID" || p.status === "COMPLETED")
     .reduce((sum: number, p: PaymentType) => sum + (p.amount || 0), 0);
@@ -103,39 +103,6 @@ export default async function TenantPaymentHistoryPage() {
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            type="text"
-            placeholder="Search by transaction ID or property..."
-            className="h-11 pl-10 pr-4 rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-[#07090e] text-sm font-medium focus-visible:ring-2 focus-visible:ring-amber-500"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          <Button
-            variant="outline"
-            className="h-10 rounded-xl bg-amber-500 text-slate-950 font-bold border-amber-500 hover:bg-amber-600"
-          >
-            All ({payments.length})
-          </Button>
-          <Button
-            variant="outline"
-            className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            Paid
-          </Button>
-          <Button
-            variant="outline"
-            className="h-10 rounded-xl border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            Pending
-          </Button>
-        </div>
-      </div>
-
       {/* Payment Table Container */}
       <div className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
         <div className="overflow-x-auto">
@@ -147,7 +114,7 @@ export default async function TenantPaymentHistoryPage() {
                 <th className="py-4 px-6">Amount</th>
                 <th className="py-4 px-6">Payment Date & Method</th>
                 <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6 text-right">Invoice</th>
+                <th className="py-4 px-6 text-right">Action</th>
               </tr>
             </thead>
 
@@ -159,7 +126,6 @@ export default async function TenantPaymentHistoryPage() {
                   </td>
                 </tr>
               ) : (
-                // 🌟 ৪. map এর ভেতরে item কে PaymentType হিসেবে ডিফাইন করা হলো
                 payments.map((item: PaymentType) => {
                   const property = item.rentalRequest?.property;
                   const isPaid = item.status === "PAID" || item.status === "COMPLETED";
@@ -232,16 +198,18 @@ export default async function TenantPaymentHistoryPage() {
                         )}
                       </td>
 
-                      {/* Download Invoice Action */}
+                      {/* View Details Action with Link */}
                       <td className="py-4 px-6 text-right">
                         {isPaid ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-9 px-3 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all duration-200"
-                          >
-                            <Download className="w-3.5 h-3.5 mr-1.5" /> Invoice
-                          </Button>
+                          <Link href={`/tenant/payments/${item.id}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-9 px-3 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all duration-200"
+                            >
+                              <Eye className="w-3.5 h-3.5 mr-1.5" /> View Details
+                            </Button>
+                          </Link>
                         ) : (
                           <Button
                             size="sm"

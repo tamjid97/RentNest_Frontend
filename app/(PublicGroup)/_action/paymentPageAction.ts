@@ -4,28 +4,64 @@ import { cookies } from "next/headers";
 
 export const getPaymentHistory = async () => {
   try {
-    // 🌟 ১. cookies() এর আগে await যুক্ত করা হয়েছে
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = cookieStore.get("token")?.value || cookieStore.get("accessToken")?.value;
 
-    const res = await fetch("https://rent-nest-nu-hazel.vercel.app/api/payments", {
+    // 🌟 এখানে localhost এর বদলে সরাসরি আপনার Vercel এর লাইভ লিংক দেওয়া হলো
+    const BASE_URL = "https://rent-nest-nu-hazel.vercel.app/api";
+
+    const res = await fetch(`${BASE_URL}/payments`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: token } : {}),
+        ...(token ? { Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}` } : {}),
       },
       cache: "no-store", 
     });
 
+    if (!res.ok) {
+      console.error(`API Error: ${res.status} ${res.statusText}`);
+      return { success: false, data: [] };
+    }
+
     const data = await res.json();
     return data;
   } catch (error: unknown) { 
-    // 🌟 ২. 'any' এর পরিবর্তে 'unknown' ব্যবহার করা হয়েছে
     console.error("Payment history fetch error:", error);
-    
-    // Error মেসেজ বের করার নিরাপদ পদ্ধতি
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return { success: false, data: [], message: errorMessage };
+  }
+};
+
+
+// paymentPageAction.ts
+
+export const getSinglePaymentDetails = async (paymentId: string) => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value || cookieStore.get("accessToken")?.value;
     
-    return { success: false, data: null, message: errorMessage };
+    // আপনার লাইভ ব্যাকএন্ড বেস ইউআরএল
+    const BASE_URL = "https://rent-nest-nu-hazel.vercel.app/api";
+
+    const res = await fetch(`${BASE_URL}/payments/${paymentId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}` } : {}),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error(`API Error: ${res.status} ${res.statusText}`);
+      return { success: false, data: null };
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Fetch single payment error:", error);
+    return { success: false, data: null };
   }
 };
