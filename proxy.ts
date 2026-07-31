@@ -9,7 +9,7 @@ import { getNewAccessToken } from "./components/service/refreshToken";
 
 const AUTH_ROUTES = ["/login", "/register"];
 
-const PUBLIC_ROUTES = ["/", "/properties", "/categories", "/how-it-works"];
+const PUBLIC_ROUTES = ["/", "/properties", "/categories", "/how-it-work"];
 
 
 export async function proxy(request: NextRequest) {
