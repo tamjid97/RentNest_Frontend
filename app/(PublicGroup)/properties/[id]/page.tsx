@@ -103,9 +103,15 @@ const getStatusFromProperty = (prop: PropertyData): string => {
   return "";
 };
 
-// 🛠️ Updated helper to extract rental request ID (checks both id and _id)
+// 🛠️ Updated helper to extract rental request ID
 const getRequestIdFromProperty = (prop: PropertyData): string => {
-  if (typeof prop.rentalRequestId === "string") {
+  // 🌟 ১. সবার আগে ব্যাকএন্ড থেকে আসা currentRentalRequestId চেক করবে
+  if (typeof prop.currentRentalRequestId === "string" && prop.currentRentalRequestId.trim() !== "") {
+    return prop.currentRentalRequestId;
+  }
+  
+  // ২. তারপর অন্য ফিল্ডগুলো চেক করবে
+  if (typeof prop.rentalRequestId === "string" && prop.rentalRequestId.trim() !== "") {
     return prop.rentalRequestId;
   }
   if (prop.requestId && typeof prop.requestId === "string") {
