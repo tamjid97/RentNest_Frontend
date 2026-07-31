@@ -25,19 +25,15 @@ export const getCatagory = async () => {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value || null;
     
-    if (!accessToken) {
-        return {
-            success: false,
-            message: "User not logged in!",
-            data: []
-        };
-    }
-
     try {
+        // হেডার তৈরি, টোকেন থাকলে কুকি পাঠানো হবে, না থাকলে ফাঁকা থাকবে
+        const headers: Record<string, string> = {};
+        if (accessToken) {
+            headers["Cookie"] = `accessToken=${accessToken}`;
+        }
+
         const res = await fetch(`${process.env.BACKEND_API_URL}/api/categories`, {
-            headers: {
-                Cookie: `accessToken=${accessToken}`
-            },
+            headers,
             next: {
                 tags: ["catagory"]
             }
@@ -46,7 +42,7 @@ export const getCatagory = async () => {
         const result = await handleApiResponse(res);
         return result;
     } catch (error) {
-        console.error("Get Batch Error:", error);
+        console.error("Get Category Error:", error);
         return { success: false, message: "Failed to connect to the backend server!", data: [] };
     }
 };
