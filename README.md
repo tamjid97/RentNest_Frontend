@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏠 RentNest - Modern Rental Property Marketplace
 
-## Getting Started
+> "Find & List Rental Properties with Ease"
 
-First, run the development server:
+RentNest is a full-featured, modern, and responsive property rental marketplace application built with **Next.js** (App Router). It bridges the gap between tenants looking for ideal homes, landlords managing their properties and requests, and administrators overseeing platform health.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Live Demo & Links
+* **Live Deployment:** https://rentnest-navy.vercel.app
+* **Backend Repository:** https://github.com/tamjid97/RentNest_epickdev.git
+* **Video Walkthrough:** https://youtu.be/_ZtuveLOK4A?si=o-idrNiUKaLr8uXw
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Key Features & Functionalities
 
-## Learn More
+### 🌍 Public Features
+* **Responsive Property Grid:** Displays available properties optimized with Next.js `next/image`, pricing, locations, and key amenities.
+* **Advanced Search & Filter:** Real-time filtering by location, price range, property type, and features.
+* **Property Details Page:** Comprehensive view featuring an image gallery, detailed descriptions, landlord information, and a seamless "Request to Rent" call-to-action.
+* **Robust UI States:** Elegant skeleton loaders for data fetching and graceful error fallbacks (`error.tsx`).
 
-To learn more about Next.js, take a look at the following resources:
+### 👤 Tenant Features
+* **Authentication Flows:** Secure registration and login forms with validation error handling.
+* **Interactive Rental Request Flow:** Submit requests with preferred dates. Approved listings unlock the integrated payment gateway checkout ("Pay Now" CTA).
+* **Payment Integration:** Secure checkout integration with Stripe, paired with dedicated success and cancel redirection pages.
+* **Tenant Dashboard:** Track rental request histories (with color-coded status badges: *Pending, Approved, Rejected, Active, Completed*), view payment histories, and submit post-stay reviews.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🏘️ Landlord Features
+* **Landlord Dashboard:** High-level overview of total properties, active rental requests, and earnings.
+* **Property Management (CRUD):** Complete forms to create, edit, and remove property listings with image URL uploads and availability toggles.
+* **Request Management Table:** Review incoming tenant requests with instant "Approve" and "Reject" action triggers accompanied by toast notifications.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🛡️ Admin Features
+* **Admin Platform Dashboard:** Global platform insights displaying total users, active properties, and platform health.
+* **User Management:** Data tables with search, pagination, and user moderation controls (*Ban/Unban* actions).
+* **Content Moderation:** Comprehensive views to inspect all listings and requests across the platform.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Tech Stack & Tools
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* **Framework:** Next.js (App Router, Server Actions, Server Components)
+* **Styling:** Tailwind CSS, Lucide React (Icons)
+* **State Management & Data Fetching:** React Hooks, Native `fetch` with Next.js caching & revalidation (`revalidatePath`)
+* **Authentication & Security:** JWT (JSON Web Tokens), Cookies, Next.js Middleware for role-based route protection
+* **Database & ORM (Backend):** Prisma ORM, PostgreSQL
+* **Deployment:** Vercel
+
+---
+
+## 📂 Project Routing Structure (Next.js App Router)
+
+| Route Path | Component / Feature | Access Level |
+| :--- | :--- | :--- |
+| `/` | Home page with featured properties & categories | Public |
+| `/properties` | Browse & filter all properties | Public |
+| `/properties/[id]` | Property details & rental request action | Public / Tenant |
+| `/register` | Role selection & registration form | Public |
+| `/login` | Login form | Public |
+| `/tenant` | Tenant overview & request history | Tenant Only |
+| `/tenant/properties/[id]` | Payment initiation page | Tenant Only |
+| `/payment/success` & `/payment/cancel` | Payment outcome feedback pages | Tenant Only |
+| `/landlord` | Landlord overview & property list | Landlord Only |
+| `/landlord/property-manage` | Create/Edit property form | Landlord Only |
+| `/landlord/rental-requests` | Manage incoming tenant requests | Landlord Only |
+| `/admin` | Admin platform overview & user management | Admin Only |
+
+---
+
+## ⚙️ Default Admin Credentials (For Testing)
+
+To test the Admin Dashboard and features, you can use the following seeded admin credentials or update your user role to `ADMIN` directly in the database:
+
+* **Admin Email:** admin@example.com
+* **Admin Password:** password123  
+*(Note: If you are using your own registered user, you can change the role to `ADMIN` via Prisma Studio or database client).*
+
+---
+
+## 📊 Rental Request Status Badges Guide
+
+* 🟡 **PENDING:** Request submitted, waiting for landlord approval.
+* 🔵 **APPROVED:** Request approved by landlord; unlocks the "Pay Now" payment option.
+* 🔴 **REJECTED:** Request declined by the landlord.
+* 🟢 **ACTIVE:** Ongoing active rental agreement; unlocks the review form after completion.
+* ⚪ **COMPLETED:** Finished rental tenure.
+
+---
+
+## 👨‍💻 Author
+Built with ❤️ by https://epickdev.vercel.app 
+*Assignment 5 - Frontend Web Development*
