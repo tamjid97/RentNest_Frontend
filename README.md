@@ -69,23 +69,12 @@ RentNest is a full-featured, modern, and responsive property rental marketplace 
 
 ---
 
-## ⚙️ Default Admin Credentials (For Testing)
+## 🔐 Administrative Test Credentials
 
-To test the Admin Dashboard and features, you can use the following seeded admin credentials or update your user role to `ADMIN` directly in the database:
+For evaluation and grading purposes, you can access the pre-configured admin account using the following credentials:
 
-* **Admin Email:** admin@example.com
-* **Admin Password:** password123  
-*(Note: If you are using your own registered user, you can change the role to `ADMIN` via Prisma Studio or database client).*
-
----
-
-## 📊 Rental Request Status Badges Guide
-
-* 🟡 **PENDING:** Request submitted, waiting for landlord approval.
-* 🔵 **APPROVED:** Request approved by landlord; unlocks the "Pay Now" payment option.
-* 🔴 **REJECTED:** Request declined by the landlord.
-* 🟢 **ACTIVE:** Ongoing active rental agreement; unlocks the review form after completion.
-* ⚪ **COMPLETED:** Finished rental tenure.
+> **Email:** `admin@example.com`  
+> **Password:** `password123`
 
 ---
 
