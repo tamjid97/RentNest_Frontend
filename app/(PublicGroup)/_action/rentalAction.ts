@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 type RentalResponseState = {
     success: boolean;
@@ -44,6 +45,9 @@ export async function createRentalRequestAction(payload: RentalPayload): Promise
             result = JSON.parse(textResponse);
         } catch (e) {
             // যদি রেসপন্সটি ভ্যালিড JSON না হয়ে প্লেন টেক্সট বা আইডি হয়
+            if (res.ok) {
+                revalidatePath(`/properties/${payload.propertyId}`);
+            }
             return {
                 success: res.ok,
                 message: textResponse || "Rental request processed.",
@@ -51,6 +55,9 @@ export async function createRentalRequestAction(payload: RentalPayload): Promise
             };
         }
 
+        if (result.success) {
+            revalidatePath(`/properties/${payload.propertyId}`);
+        }
         return result;
     } catch (error) {
         console.error("Rental request error:", error);

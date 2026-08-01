@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Eye, EyeOff, Mail, 
   Home, Lock, Sparkles, 
@@ -13,7 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { loginAction } from "../_action/loginAction";
+import { loginAction, LoginState } from "../_action/loginAction"; // 🌟 LoginState ইমপোর্ট করা হলো
+
+// আলাদা কোনো LoginActionState ইন্টারফেস বানানোর দরকার নেই
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -33,7 +36,14 @@ const itemVariants: Variants = {
 };
 
 export default function LoginForm() {
-  const [state, action, pending] = useActionState(loginAction, null);
+  const router = useRouter();
+  
+  // 🌟 এখন দুটি ফাইলেই একই LoginState টাইপ ব্যবহার করা হচ্ছে
+  const [state, action, pending] = useActionState<LoginState, FormData>(
+    loginAction, 
+    {}
+  );
+  
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -43,13 +53,25 @@ export default function LoginForm() {
       toast.error(state.message || "Login failed");
     } else if (state.success === true) {
       toast.success("Welcome back to RentNest!");
+      
+      setTimeout(() => {
+        if (state.role === "TENANT") {
+            router.push("/tenant"); 
+        } else if (state.role === "LANDLORD") {
+            router.push("/landlord"); 
+        } else if (state.role === "ADMIN") {
+            router.push("/admin");
+        } else {
+            router.push("/");
+        }
+      }, 1000); 
     }
-  }, [state]);
+  }, [state, router]);
+
 
   return (
     <div className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden p-4 md:p-8 bg-slate-50 dark:bg-[#030712] transition-colors duration-300">
       
-      {/* Background Glowing Orbs */}
       <div className="pointer-events-none absolute right-1/4 top-1/4 h-80 w-80 rounded-full bg-amber-500/15 blur-[140px]" />
       <div className="pointer-events-none absolute bottom-1/4 left-1/4 h-80 w-80 rounded-full bg-amber-600/10 blur-[140px]" />
 
@@ -61,7 +83,6 @@ export default function LoginForm() {
       >
         <div className="overflow-hidden rounded-[2.5rem] border border-amber-500/30 dark:border-amber-500/20 bg-white/80 dark:bg-slate-900/80 shadow-[0_20px_50px_rgba(245,158,11,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
           
-          {/* Header */}
           <div className="space-y-2 p-8 pb-4 text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -96,7 +117,6 @@ export default function LoginForm() {
               animate="show"
               className="space-y-5"
             >
-              {/* Email Address */}
               <motion.div variants={itemVariants} className="space-y-2">
                 <Label htmlFor="email" className="text-slate-700 dark:text-slate-300 font-semibold text-xs uppercase tracking-wider">
                   Email Address
@@ -114,7 +134,6 @@ export default function LoginForm() {
                 </div>
               </motion.div>
 
-              {/* Password */}
               <motion.div variants={itemVariants} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="text-slate-700 dark:text-slate-300 font-semibold text-xs uppercase tracking-wider">
@@ -145,7 +164,6 @@ export default function LoginForm() {
                 </div>
               </motion.div>
 
-              {/* Submit Button */}
               <motion.div variants={itemVariants} className="pt-2">
                 <Button 
                   type="submit" 

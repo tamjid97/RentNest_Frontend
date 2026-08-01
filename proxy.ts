@@ -6,98 +6,99 @@ import { NextResponse } from 'next/server';
 import { jwtUtils } from "./utils/jwt";
 import { getNewAccessToken } from "./components/service/refreshToken";
 
-
 const AUTH_ROUTES = ["/login", "/register"];
-
 const PUBLIC_ROUTES = ["/", "/properties", "/categories", "/how-it-work"];
-
 
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-
     const cookieStore = await cookies();
 
     let accessToken = request.cookies.get("accessToken")?.value;
     const refreshToken = request.cookies.get("refreshToken")?.value;
 
     let decodedAccessToken = accessToken ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string) : null;
-
     const decodedRefreshToken = refreshToken ? jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string) : null;
 
-    if(!decodedAccessToken?.success && decodedRefreshToken?.success){
+    // যদি এক্সেস টোকেন মেয়াদোত্তীর্ণ হয় কিন্তু রিফ্রেশ টোকেন ভ্যালিড থাকে
+    if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
+        try {
+            const result = await getNewAccessToken();
 
-        const result = await getNewAccessToken();
+            if (result?.success) {
+                const newAccessToken = result.data.accessToken;
 
-        if(result.success){
-            const newAccessToken = result.data.accessToken;
+                cookieStore.set("accessToken", newAccessToken, {
+                    httpOnly: true,
+                    maxAge: 60 * 60 * 24,
+                    sameSite: "lax",
+                });
 
-            cookieStore.set("accessToken", newAccessToken , {
-                httpOnly : true,
-                maxAge : 60 * 60 * 24,
-                sameSite : "lax",
-            });
-
-            accessToken = newAccessToken;
-            decodedAccessToken = jwtUtils.verifyToken(accessToken!, process.env.JWT_ACCESS_SECRET as string);
-
-
+                accessToken = newAccessToken;
+                decodedAccessToken = jwtUtils.verifyToken(accessToken!, process.env.JWT_ACCESS_SECRET as string);
+            }
+        } catch (error) {
+            console.error("Token refresh failed in proxy:", error);
         }
     }
 
-
     let userRole = null;
 
-    if(!decodedAccessToken?.success){
-
+    if (!decodedAccessToken?.success && accessToken) {
         cookieStore.delete("accessToken");
-
     }
 
-    if(decodedAccessToken?.success && decodedAccessToken.data){
+    if (decodedAccessToken?.success && decodedAccessToken.data) {
         userRole = (decodedAccessToken.data as JwtPayload).role;
     }
 
-    
-
-    if(accessToken && AUTH_ROUTES.includes(pathname)){
-        if(userRole === "TENANT"){
+    // লগইন করা থাকলে ইউজারকে আর /login বা /register এ যেতে না দিয়ে তার রোল অনুযায়ী ড্যাশবোর্ডে পাঠিয়ে দেবে
+    if (accessToken && decodedAccessToken?.success && AUTH_ROUTES.includes(pathname)) {
+        if (userRole === "TENANT") {
             return NextResponse.redirect(new URL('/tenant', request.url));
-        }else if(userRole === "LANDLORD"){
+        } else if (userRole === "LANDLORD") {
             return NextResponse.redirect(new URL('/landlord', request.url));
-        }else if(userRole === "ADMIN"){
+        } else if (userRole === "ADMIN") {
             return NextResponse.redirect(new URL('/admin', request.url));
-        }else{
+        } else {
             return NextResponse.redirect(new URL('/', request.url));
         }
     }
 
     const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
-
     const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
-    if(!accessToken && !isPublicRoute && !isAuthRoute){
+    // প্রটেক্টেড রুটে টোকেন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
+    if (!accessToken && !isPublicRoute && !isAuthRoute) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-
-
-    if(pathname.startsWith("/tenant") && userRole !== "TENANT"){
+    // রোল প্রটেকশন (Role-based restriction)
+    if (pathname.startsWith("/tenant") && userRole !== "TENANT") {
         return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/landlord") && userRole !== "LANDLORD"){
+    } else if (pathname.startsWith("/landlord") && userRole !== "LANDLORD") {
         return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/admin") && userRole !== "ADMIN"){
+    } else if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
         return NextResponse.redirect(new URL('/not-found', request.url));
     }
 
-    return NextResponse.next()
+    // কুকি আপডেট হওয়ার পর রেসপন্স সঠিকভাবে পাস করার জন্য NextResponse.next() এর সাথে কুকিগুলো সিঙ্ক করা হলো
+    const response = NextResponse.next();
+    
+    if (accessToken) {
+        response.cookies.set({
+            name: "accessToken",
+            value: accessToken,
+            httpOnly: true,
+            maxAge: 60 * 60 * 24,
+            sameSite: "lax",
+        });
+    }
+
+    return response;
 }
 
 export const config = {
     matcher: [
-        /* 
-          ✅ এখানে (png|svg|...) এর পরিবর্তে অ-ক্যাপচারিং গ্রুপ (?:png|svg|...) ব্যবহার করা হয়েছে 
-          যাতে Next.js কোনো এরর না দেয়।
-        */
         '/((?!api|_next/static|favicon.ico|_next/image|.*\\.(?:png|svg|jpg|jpeg|webp|gif)$).*)',
     ],
-}
+};
