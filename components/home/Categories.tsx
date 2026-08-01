@@ -51,6 +51,7 @@ const itemVariants: Variants = {
 }
 
 export default function Categories() {
+  
   return (
     <section className="relative w-full bg-slate-50 dark:bg-[#030712] py-14 overflow-hidden transition-colors duration-300">
       

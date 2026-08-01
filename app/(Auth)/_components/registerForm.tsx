@@ -40,6 +40,7 @@ const itemVariants: Variants = {
 };
 
 export default function RegisterForm() {
+
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>("");
