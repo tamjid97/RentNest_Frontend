@@ -1,4 +1,4 @@
-// app/(DashboardGroup)/_config/sidebarMenuItems.ts
+
 import type { ISidebarItem } from "@/lib/type";
 import {
   Building2,

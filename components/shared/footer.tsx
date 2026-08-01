@@ -19,7 +19,7 @@ export function Footer() {
     }
 
     toast.success('Subscribed Successfully!')
-    setEmail('') // ইনপুট ফিল্ড খালি করা
+    setEmail('')
   }
 
   return (

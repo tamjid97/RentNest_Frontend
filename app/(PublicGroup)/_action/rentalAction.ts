@@ -37,14 +37,12 @@ export async function createRentalRequestAction(payload: RentalPayload): Promise
             body: JSON.stringify(payload),
         });
 
-        // প্রথমে রেসপন্সটি টেক্সট হিসেবে পড়া হচ্ছে যাতে JSON ক্র্যাশ না করে
         const textResponse = await res.text();
 
         let result;
         try {
             result = JSON.parse(textResponse);
         } catch (e) {
-            // যদি রেসপন্সটি ভ্যালিড JSON না হয়ে প্লেন টেক্সট বা আইডি হয়
             if (res.ok) {
                 revalidatePath(`/properties/${payload.propertyId}`);
             }

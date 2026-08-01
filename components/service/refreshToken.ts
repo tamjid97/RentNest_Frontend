@@ -8,7 +8,6 @@ export const getNewAccessToken = async () => {
     const refreshToken = cookieStore.get("refreshToken")?.value || null;
 
     if(!refreshToken){
-        // throw new Error("User Not Logged In!");
 
         return {
             success : false,

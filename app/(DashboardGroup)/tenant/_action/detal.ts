@@ -6,7 +6,7 @@ type ResponseState = {
     success: boolean;
     statusCode?: number;
     message: string;
-    data?: unknown; // 🌟 any-এর পরিবর্তে unknown ব্যবহার করা হয়েছে
+    data?: unknown; 
 };
 
 export async function getRentalRequestDetails(id: string): Promise<ResponseState> {

@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getMyRentalRequest } from "../../tenant/_action/rentalAction";
 
-// 🌟 ব্যাকএন্ড রেসপন্স অনুযায়ী টাইপ ডিফিনিশন
+
 export interface Property {
   id?: string;
   title?: string;
@@ -50,13 +50,12 @@ export interface MyRentalRequest {
 }
 
 export default function TenantRentalRequestsPage() {
-  // 🌟 ১. ইনিশিয়াল স্টেটসমূহ
+
   const [requests, setRequests] = useState<MyRentalRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 🌟 ২. fetchRequests ফাংশন (startTransition দিয়ে র‍্যাপ করা)
   const fetchRequests = async () => {
     try {
       const result = await getMyRentalRequest();
@@ -79,18 +78,16 @@ export default function TenantRentalRequestsPage() {
     }
   };
 
-  // 🌟 ৩. ম্যানুয়াল রিফ্রেশের জন্য আলাদা হ্যান্ডলার
+ 
   const handleRefresh = () => {
     setIsLoading(true);
     fetchRequests();
   };
 
-  // 🌟 ৪. Clean useEffect
   useEffect(() => {
     fetchRequests();
   }, []);
 
-  // 🌟 তারিখ ফরম্যাট করার ফাংশন
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-GB", {
@@ -100,7 +97,6 @@ export default function TenantRentalRequestsPage() {
     });
   };
 
-  // 🌟 ফিল্টারিং লজিক (Search & Tabs)
   const filteredRequests = requests.filter((item) => {
     const propertyTitle = item.property?.title || "";
     const propertyLocation = item.property?.location || item.property?.address || "";
@@ -115,7 +111,6 @@ export default function TenantRentalRequestsPage() {
     return matchesSearch;
   });
 
-  // 🌟 কাউন্টার হিসেব
   const pendingCount = requests.filter((r) => r.status === "PENDING").length;
   const approvedCount = requests.filter((r) => r.status === "APPROVED").length;
   const rejectedCount = requests.filter((r) => r.status === "REJECTED").length;

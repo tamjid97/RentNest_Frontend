@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { getAllRentalRequest } from "../_action/rentalrequest";
 
-// 🌟 Rental Request-এর জন্য টাইপ বা ইন্টারফেস ডিফাইন করা হলো
+
 interface Client {
   name?: string;
   email?: string;

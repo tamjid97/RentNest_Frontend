@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { getAllProperty } from "../_action/property";
 
-// 🌟 Property Interfaces & Types
+
 interface Landlord {
   name: string;
   email: string;
@@ -66,7 +66,6 @@ export default function AdminPropertiesReadOnlyPage() {
         const res: PropertyApiResponse = await getAllProperty();
         
         if (res.success && res.data) {
-          // টাইপ সেইফ ডেটা এক্সট্রাকশন
           let dataArray: PropertyItem[] = [];
 
           if (Array.isArray(res.data)) {
@@ -95,7 +94,7 @@ export default function AdminPropertiesReadOnlyPage() {
     fetchProperties();
   }, []);
 
-  // ফিল্টারিং এবং সার্চ লজিক
+
   const filteredProperties = properties.filter((property) => {
     const matchesSearch =
       property.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -136,7 +135,7 @@ export default function AdminPropertiesReadOnlyPage() {
         </div>
       </div>
 
-      {/* 🌟 Search & Filter Section */}
+      {/*  Search & Filter Section */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -167,7 +166,7 @@ export default function AdminPropertiesReadOnlyPage() {
         </div>
       </div>
 
-      {/* 🌟 Properties Grid */}
+      {/*  Properties Grid */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-amber-500" />

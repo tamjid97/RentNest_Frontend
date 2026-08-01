@@ -33,13 +33,11 @@ const rowTwoPartners: Partner[] = [
 function LogoCard({ partner }: { partner: Partner }) {
   return (
     <div className="flex shrink-0 items-center justify-center px-3.5">
-      {/* কার্ডের ব্যাকগ্রাউন্ড: লাইট মোডে সলিড সাদা এবং ডার্ক মোডে হিরো সেকশনের গ্লাস ইফেক্ট */}
       <div className="flex items-center justify-center w-36 h-20 sm:w-44 sm:h-24 bg-white dark:bg-[#0b1120]/80 border border-slate-200/60 dark:border-white/5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_25px_rgba(245,158,11,0.12)] hover:border-amber-500/40 dark:hover:border-amber-500/30 transition-all duration-500 p-4 backdrop-blur-md group/card">
         <img
           src={partner.src}
           alt={`${partner.name} logo`}
           loading="lazy"
-          // গ্রেস্কেল ইফেক্ট সরিয়ে দেওয়া হয়েছে, এখন লোগোর আসল কালার সবসময় দেখা যাবে
           className="max-h-8 sm:max-h-10 w-auto object-contain transition-transform duration-500 group-hover/card:scale-110"
           onError={(e) => {
             e.currentTarget.src = 'https://via.placeholder.com/120x40/e2e8f0/1e293b?text=' + partner.name
@@ -54,12 +52,10 @@ export default function TrustedPartners() {
   return (
     <section
       aria-labelledby="trusted-partners-heading"
-      // ডার্ক মোডের ব্যাকগ্রাউন্ড হিরো সেকশনের সাথে হুবহু মিল রাখা হয়েছে
       className="w-full bg-slate-50 dark:bg-[#030712] py-24 overflow-hidden transition-colors duration-300 relative"
     >
       {/* ================= HERO SECTION-ER MOTON BACKGROUND EFFECTS ================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Subtle Grid (হিরো সেকশনের মতো) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#f59e0b08_1px,transparent_1px),linear-gradient(to_bottom,#f59e0b08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_70%,transparent_110%)]"></div>
       </div>
 

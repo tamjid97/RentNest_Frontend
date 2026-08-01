@@ -14,9 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { loginAction, LoginState } from "../_action/loginAction"; // 🌟 LoginState ইমপোর্ট করা হলো
+import { loginAction, LoginState } from "../_action/loginAction";
 
-// আলাদা কোনো LoginActionState ইন্টারফেস বানানোর দরকার নেই
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -38,7 +37,7 @@ const itemVariants: Variants = {
 export default function LoginForm() {
   const router = useRouter();
   
-  // 🌟 এখন দুটি ফাইলেই একই LoginState টাইপ ব্যবহার করা হচ্ছে
+
   const [state, action, pending] = useActionState<LoginState, FormData>(
     loginAction, 
     {}

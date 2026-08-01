@@ -46,7 +46,7 @@ export default function PublicPropertiesPage() {
   const [properties, setProperties] = useState<ISproperty[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // সার্চ এবং ফিল্টারিং স্টেট
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
 
@@ -77,7 +77,7 @@ export default function PublicPropertiesPage() {
     fetchProperties();
   }, []);
 
-  // 🛡️ নিরাপদ সার্চ ও ক্যাটাগরি ফিল্টারিং (Null/Undefined হ্যান্ডেল করা হয়েছে)
+
   const filteredProperties = properties.filter((property) => {
     const title = property?.title || "";
     const location = property?.location || "";
@@ -95,7 +95,7 @@ export default function PublicPropertiesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  // 🏷️ সেফলি ইউনিক ক্যাটাগরি লিস্ট তৈরি
+
   const uniqueCategories = Array.isArray(properties)
     ? (Array.from(
         new Set(properties.map((p) => p?.category?.name).filter(Boolean))
@@ -226,7 +226,6 @@ export default function PublicPropertiesPage() {
                 className="group relative bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5 hover:border-amber-500/40 transition-all duration-500 flex flex-col justify-between"
               >
                 <div>
-                  {/* ✅ বর্ডারহীন ফুল-উইডথ ইমেজ সেকশন */}
                   <div className="relative h-60 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
                     <img
                       src={property.image}

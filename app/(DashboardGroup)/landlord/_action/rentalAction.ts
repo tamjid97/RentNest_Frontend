@@ -9,7 +9,6 @@ type ResponseState = {
     data?: unknown;
 };
 
-// ল্যান্ডলর্ডের প্রপার্টির জন্য আসা সমস্ত রেন্টাল রিকোয়েস্ট গেট করার সার্ভার অ্যাকশন
 export async function getLandlordRentalRequestsAction(): Promise<ResponseState> {
     try {
         const cookieStore = await cookies();
@@ -53,7 +52,7 @@ export async function getLandlordRentalRequestsAction(): Promise<ResponseState> 
     }
 }
 
-// রেন্টাল রিকোয়েস্ট Approve বা Reject করার সার্ভার অ্যাকশন
+
 export async function updateRentalRequestStatusAction(
     requestId: string,
     status: "APPROVED" | "REJECTED"

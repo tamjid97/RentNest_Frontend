@@ -44,7 +44,6 @@ export const registerUser = async (prevState: PostState, formData: FormData): Pr
     }
 
     if (result.success) {
-      // Next.js এর রুল অনুযায়ী দ্বিতীয় আর্গুমেন্ট (যেমন 'max' বা টাইম) পাস করা হলো
       revalidateTag("register", "max"); 
     }
 

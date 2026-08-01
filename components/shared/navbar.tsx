@@ -8,7 +8,6 @@ import {
   Building2,
   HelpCircle,
   LogOut,
-  Settings,
   LayoutDashboard,
   Menu,
   X,
@@ -31,10 +30,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
-// UserDropdown কম্পোনেন্ট Navbar-এর বাইরে রাখা হয়েছে
+
 function UserDropdown({ user }: NavbarProps) {
   const userRole = user?.data?.profile?.role;
-  const profilePhoto = user?.data?.profile?.profilePhoto; // ইউজারের প্রোফাইল ছবির লিংক
+  const profilePhoto = user?.data?.profile?.profilePhoto; 
 
   let dashboardUrl = "/";
   if (userRole === "TENANT") {
@@ -61,7 +60,7 @@ function UserDropdown({ user }: NavbarProps) {
           className="group flex items-center gap-2 md:gap-3 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent dark:to-slate-900 p-1 md:pr-3 transition-all duration-300 hover:border-amber-400 focus:outline-none cursor-pointer"
           aria-label="User menu"
         >
-          {/* প্রফাইল ছবি অথবা ডিফল্ট লেটার */}
+          
           <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-extrabold shadow-md">
             {profilePhoto ? (
               <img
@@ -69,7 +68,6 @@ function UserDropdown({ user }: NavbarProps) {
                 alt="Profile"
                 className="h-full w-full object-cover"
                 onError={(e) => {
-                  // ছবি লোড না হলে ফলব্যাক হিসেবে প্রথম অক্ষর দেখাবে
                   (e.target as HTMLElement).style.display = "none";
                 }}
               />

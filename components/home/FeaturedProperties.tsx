@@ -58,7 +58,6 @@ export default function FeaturedProperties() {
       try {
         const response = await getProperty();
         if (response.success && response.data) {
-          // createdAt অনুযায়ী সর্ট করে লেটেস্ট ৩টি প্রপার্টি ফিল্টার করা
           const sortedLatest = response.data
             .sort((a: ISproperty, b: ISproperty) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 3);

@@ -41,15 +41,11 @@ export default function CreateReviewPage() {
     setErrorMessage("");
 
     try {
-      // এখানে আপনার ব্যাকএন্ড API বা Server Action কল করতে পারেন
-      // যেমন: await createReviewAction({ propertyId, rating, comment });
-      
-      // সিমুলেশনের জন্য ১ সেকেন্ড ওয়েট করা হচ্ছে
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setSuccessMessage(true);
       setTimeout(() => {
-        router.push("/tenant/payments"); // সাবমিট হওয়ার পর পেমেন্টস পেজে রিডাইরেক্ট হবে
+        router.push("/tenant/payments"); 
       }, 2000);
     } catch (err) {
       console.error(err);

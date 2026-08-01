@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { getRentalRequestDetails } from "../../_action/detal";
 
 
-// 🌟 ব্যাকএন্ডের আসল JSON স্ট্রাকচার অনুযায়ী টাইপ আপডেট করা হলো
+
 export interface RentalRequestDetails {
   id: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
@@ -128,7 +128,7 @@ export default function RentalRequestDetailsPage() {
     );
   }
 
-  // 🌟 client থেকে ডেটা ম্যাপ করা হচ্ছে
+ 
   const clientImage = details.client?.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(details.client?.name || "User")}`;
   const propImage = details.property?.image || details.property?.images?.[0];
   const price = details.property?.price || details.property?.rent;

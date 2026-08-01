@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { getPropertyById } from "../../_action/propertyAction";
 import RentalActionBox from "../../_components/RentalActionBox";
 
-// 🛠️ Interfaces matching your exact backend response
+//  Interfaces matching your exact backend response
 interface Landlord {
   id?: string;
   name?: string;
@@ -52,7 +52,7 @@ interface PropertyData {
   image?: string;
   status?: string;
   currentUserRequestStatus?: string;
-  rentalRequestId?: string; // 🌟 টাইপস্ক্রিপ্ট এরর দূর করতে এটি যোগ করা হয়েছে
+  rentalRequestId?: string; 
   myRequest?: { status?: string; id?: string; [key: string]: unknown };
   rentalRequest?: { status?: string; id?: string; [key: string]: unknown };
   rentalRequests?: Array<{ status?: string; id?: string; [key: string]: unknown }>;
@@ -60,7 +60,7 @@ interface PropertyData {
   [key: string]: unknown;
 }
 
-// 🛠️ Safe helper function using `unknown` instead of `any`
+//  Safe helper function using `unknown` instead of `any`
 const renderValue = (value: unknown, fallback: string = ""): string => {
   if (value === null || value === undefined) return fallback;
   if (typeof value === "object") {
@@ -83,7 +83,7 @@ const renderValue = (value: unknown, fallback: string = ""): string => {
   return fallback;
 };
 
-// 🛠️ Robust helper to extract status
+// Robust helper to extract status
 const getStatusFromProperty = (prop: PropertyData): string => {
   if (typeof prop.status === "string" && prop.status.trim() !== "") {
     return prop.status;
@@ -106,14 +106,14 @@ const getStatusFromProperty = (prop: PropertyData): string => {
   return "";
 };
 
-// 🛠️ Updated helper to extract rental request ID
+// Updated helper to extract rental request ID
 const getRequestIdFromProperty = (prop: PropertyData): string => {
-  // 🌟 ১. সবার আগে ব্যাকএন্ড থেকে আসা currentRentalRequestId চেক করবে
+
   if (typeof prop.currentRentalRequestId === "string" && prop.currentRentalRequestId.trim() !== "") {
     return prop.currentRentalRequestId;
   }
   
-  // ২. তারপর অন্য ফিল্ডগুলো চেক করবে
+
   if (typeof prop.rentalRequestId === "string" && prop.rentalRequestId.trim() !== "") {
     return prop.rentalRequestId;
   }

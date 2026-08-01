@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
     let decodedAccessToken = accessToken ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string) : null;
     const decodedRefreshToken = refreshToken ? jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string) : null;
 
-    // যদি এক্সেস টোকেন মেয়াদোত্তীর্ণ হয় কিন্তু রিফ্রেশ টোকেন ভ্যালিড থাকে
+
     if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
         try {
             const result = await getNewAccessToken();
@@ -51,7 +51,7 @@ export async function proxy(request: NextRequest) {
         userRole = (decodedAccessToken.data as JwtPayload).role;
     }
 
-    // লগইন করা থাকলে ইউজারকে আর /login বা /register এ যেতে না দিয়ে তার রোল অনুযায়ী ড্যাশবোর্ডে পাঠিয়ে দেবে
+
     if (accessToken && decodedAccessToken?.success && AUTH_ROUTES.includes(pathname)) {
         if (userRole === "TENANT") {
             return NextResponse.redirect(new URL('/tenant', request.url));
@@ -67,12 +67,11 @@ export async function proxy(request: NextRequest) {
     const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
     const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
-    // প্রটেক্টেড রুটে টোকেন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
+
     if (!accessToken && !isPublicRoute && !isAuthRoute) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // রোল প্রটেকশন (Role-based restriction)
     if (pathname.startsWith("/tenant") && userRole !== "TENANT") {
         return NextResponse.redirect(new URL('/not-found', request.url));
     } else if (pathname.startsWith("/landlord") && userRole !== "LANDLORD") {
@@ -81,7 +80,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/not-found', request.url));
     }
 
-    // কুকি আপডেট হওয়ার পর রেসপন্স সঠিকভাবে পাস করার জন্য NextResponse.next() এর সাথে কুকিগুলো সিঙ্ক করা হলো
     const response = NextResponse.next();
     
     if (accessToken) {

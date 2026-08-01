@@ -6,14 +6,13 @@ import { cookies } from "next/headers";
 export const isAccessTokenExist = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-  console.log("[Action] Checking Access Token:", token ? "Token Found ✅" : "Token Not Found ❌");
   return token;
 };
 
-// Response হ্যান্ডেল করার জন্য হেল্পার ফাংশন
+
 const handleApiResponse = async (res: Response) => {
   const contentType = res.headers.get("content-type");
-  console.log("[Action] Response Status:", res.status, "| Content-Type:", contentType);
+
   
   if (!contentType || !contentType.includes("application/json")) {
     const text = await res.text();
@@ -26,7 +25,6 @@ const handleApiResponse = async (res: Response) => {
     };
   }
   const jsonRes = await res.json();
-  console.log("[Action] Parsed JSON Response:", jsonRes);
   return jsonRes;
 };
 
@@ -36,9 +34,8 @@ interface ActionResponse {
   data?: unknown;
 }
 
-// ==========================================
 // 1. Create Property Action
-// ==========================================
+
 export async function createProperty(formData: FormData): Promise<ActionResponse> {
   console.log("[Action] createProperty called 🚀");
   try {
@@ -62,16 +59,15 @@ export async function createProperty(formData: FormData): Promise<ActionResponse
       amenities: amenities.map((item) => String(item)),
     };
 
-    console.log("[Action] createProperty Payload:", payload);
+
 
     const accessToken = await isAccessTokenExist();
     if (!accessToken) {
-      console.error("[Action] createProperty Error: User not logged in!");
       return { success: false, message: "User not logged in!" };
     }
 
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties`;
-    console.log("[Action] Fetching URL:", backendUrl);
+
 
     const response = await fetch(backendUrl, {
       method: "POST",
@@ -85,23 +81,22 @@ export async function createProperty(formData: FormData): Promise<ActionResponse
     const result = (await handleApiResponse(response)) as ActionResponse;
     
     if (result.success) {
-      console.log("[Action] Property created successfully, revalidating tag");
+
       revalidateTag("properties", "max");
     }
 
     return result;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Something went wrong";
-    console.error("[Action] createProperty Exception Error:", error);
     return { success: false, message: errorMessage };
   }
 }
 
-// ==========================================
+
 // 2. Get Properties Action
-// ==========================================
+
 export const getProperties = async () => {
-  console.log("[Action] getProperties called 📥");
+
   const accessToken = await isAccessTokenExist();
   
   if (!accessToken) {
@@ -111,7 +106,7 @@ export const getProperties = async () => {
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties`;
-    console.log("[Action] Fetching URL:", backendUrl);
+
 
     const res = await fetch(backendUrl, {
       method: "GET",
@@ -132,11 +127,11 @@ export const getProperties = async () => {
   }
 };
 
-// ==========================================
+
 // 3. Update Property Action
-// ==========================================
+
 export const updateProperty = async (id: string, formData: FormData) => {
-  console.log(`[Action] updateProperty called for ID: ${id} 📝`);
+
   const rawImage = formData.get("image") as string;
   const defaultImage = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop";
 
@@ -161,7 +156,7 @@ export const updateProperty = async (id: string, formData: FormData) => {
     image: rawImage && rawImage.trim() !== "" ? rawImage : defaultImage,
   };
 
-  console.log("[Action] updateProperty Payload:", payload);
+
 
   const accessToken = await isAccessTokenExist();
 
@@ -172,7 +167,6 @@ export const updateProperty = async (id: string, formData: FormData) => {
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties/${id}`;
-    console.log("[Action] Fetching URL:", backendUrl);
 
     const res = await fetch(backendUrl, {
       method: "PUT",
@@ -196,21 +190,19 @@ export const updateProperty = async (id: string, formData: FormData) => {
   }
 };
 
-// ==========================================
 // 4. Delete Property Action
-// ==========================================
+
 export const deleteProperty = async (id: string) => {
   console.log(`[Action] deleteProperty called for ID: ${id} 🗑️`);
   const accessToken = await isAccessTokenExist();
 
   if (!accessToken) {
-    console.error("[Action] deleteProperty Error: User not logged in!");
     return { success: false, message: "User not logged in!" };
   }
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties/${id}`;
-    console.log("[Action] Fetching URL:", backendUrl);
+
 
     const res = await fetch(backendUrl, {
       method: "DELETE",
@@ -222,12 +214,10 @@ export const deleteProperty = async (id: string) => {
     const result = await handleApiResponse(res);
 
     if (result.success) {
-      console.log("[Action] Property deleted successfully, revalidating tag");
       revalidateTag("properties", "max"); 
     }
     return result;
   } catch (error) {
-    console.error("[Action] deleteProperty Exception Error:", error);
     return { success: false, message: "Failed to connect to the backend server!" };
   }
 };

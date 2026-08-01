@@ -29,7 +29,7 @@ export default async function RootLayout({
 
   const user = await getMe();
   return (
-    // suppressHydrationWarning বাধ্যতামূলক next-themes এর জন্য
+
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col min-h-screen transition-colors duration-300">
         <Providers>

@@ -2,14 +2,14 @@
 
 import { cookies } from "next/headers";
 
-// ✅ ফিক্স: ব্যাকএন্ড স্কিমার সাথে মিলিয়ে টাইপ ডিফাইন করা হয়েছে
+
 export type UserItem = {
   id: string;
   name: string;
   email: string;
   role: "TENANT" | "LANDLORD" | "ADMIN";
   activeStatus: "ACTIVE" | "BLOCKED" | "BANNED";
-  profilePhoto?: string | null; // ✅ ফিক্স: profilePhoto যুক্ত করা হয়েছে
+  profilePhoto?: string | null; 
   createdAt: string;
   updatedAt: string;
 };
@@ -21,7 +21,7 @@ type UserApiResponse = {
   data?: UserItem[] | { data?: UserItem[] } | UserItem;
 };
 
-// ১. সকল ইউজার ফেচ করার ফাংশন
+
 export async function getAllUsers(): Promise<UserApiResponse> {
   try {
     const cookieStore = await cookies();
@@ -47,7 +47,6 @@ export async function getAllUsers(): Promise<UserApiResponse> {
   }
 }
 
-// ২. ইউজারের স্ট্যাটাস আপডেট (Ban / Active) করার ফাংশন
 export async function updateUserStatus(userId: string, activeStatus: string): Promise<UserApiResponse> {
   try {
     const cookieStore = await cookies();
@@ -57,7 +56,7 @@ export async function updateUserStatus(userId: string, activeStatus: string): Pr
       return { success: false, message: "Unauthorized! Please login first." };
     }
 
-    // আপনার ব্যাকএন্ডের রাউট অনুযায়ী এন্ডপয়েন্ট
+
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/admin/users/${userId}`, {
       method: "PATCH",
       headers: {

@@ -30,15 +30,15 @@ const formatDate = (dateString: string) => {
 };
 
 export default async function PaymentDetailsPage({ params }: PaymentDetailsPageProps) {
-  // URL থেকে ডাইনামিক ID রিসিভ করা
+
   const resolvedParams = await params;
   const paymentId = resolvedParams.id;
 
-  // ব্যাকএন্ড API থেকে রিয়েল ডাটা ফেচ করা
+
   const response = await getSinglePaymentDetails(paymentId);
   const payment = response?.data || response;
 
-  // যদি ডাটা না পাওয়া যায়
+
   if (!payment || !payment.id) {
     return (
       <div className="p-12 text-center space-y-4">

@@ -7,7 +7,7 @@ export const getPaymentHistory = async () => {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value || cookieStore.get("accessToken")?.value;
 
-    // 🌟 এখানে localhost এর বদলে সরাসরি আপনার Vercel এর লাইভ লিংক দেওয়া হলো
+
     const BASE_URL = "https://rent-nest-nu-hazel.vercel.app/api";
 
     const res = await fetch(`${BASE_URL}/payments`, {
@@ -41,7 +41,7 @@ export const getSinglePaymentDetails = async (paymentId: string) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value || cookieStore.get("accessToken")?.value;
     
-    // আপনার লাইভ ব্যাকএন্ড বেস ইউআরএল
+
     const BASE_URL = "https://rent-nest-nu-hazel.vercel.app/api";
 
     const res = await fetch(`${BASE_URL}/payments/${paymentId}`, {

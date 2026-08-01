@@ -127,10 +127,7 @@ export default function LandlordPropertiesPage() {
     
     const formData = new FormData(e.currentTarget);
     
-    // 🔍 কনসোল লগ: আপডেটের সময় কী ডাটা যাচ্ছে তা দেখার জন্য
-    console.log(`=== UPDATE PROPERTY DEBUG (ID: ${id}) ===`);
-    console.log("FormData Entries:", Object.fromEntries(formData.entries()));
-    console.log("Amenities Selected:", formData.getAll("amenities"));
+  
 
     const res = await updateProperty(id, formData); 
     console.log("Update Property Server Response:", res);

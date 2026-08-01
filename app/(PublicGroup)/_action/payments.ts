@@ -20,7 +20,7 @@ export const pay = async (rentalRequestId: string) => {
             "Content-Type": "application/json",
             Cookie: `accessToken=${accessToken}`
         },
-        body: JSON.stringify({ rentalRequestId }) // 🌟 কাঙ্ক্ষিত বডি ফরম্যাট পাঠানো হচ্ছে
+        body: JSON.stringify({ rentalRequestId }) 
     });
     
     const result = await res.json();

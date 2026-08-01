@@ -134,7 +134,7 @@ export default function LandlordDashboard() {
         </div>
       </motion.div>
 
-      {/* 🚀 Features Grid Area */}
+      {/* Features Grid Area */}
       <div className="pt-2">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}

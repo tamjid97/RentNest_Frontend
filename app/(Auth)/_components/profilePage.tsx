@@ -5,10 +5,10 @@ import { getMe } from '@/components/service/getMe'
 
 
 export default async function ProfilePage() {
-  // সার্ভার অ্যাকশন থেকে রিয়েল ডেটা ফেচ করা হচ্ছে
+
   const res = await getMe()
 
-  // যদি ইউজার লগইন না থাকে বা এরর আসে
+
   if (!res.success || !res.data?.profile) {
     return (
       <div className="min-h-[85vh] bg-slate-50 dark:bg-[#030712] flex items-center justify-center px-4">
@@ -22,14 +22,13 @@ export default async function ProfilePage() {
 
   const profile = res.data.profile
 
-  // createdAt থেকে সুন্দর ডেট ফরম্যাট তৈরি
+
   const formattedDate = new Date(profile.createdAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   })
 
-  // প্রফাইল ফটো না থাকলে নামের প্রথম অক্ষর দিয়ে অবতার তৈরি
   const initialLetter = profile.name ? profile.name.charAt(0).toUpperCase() : 'U'
 
   return (

@@ -25,11 +25,10 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
-  // 🔍 Search and Filter States
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "BANNED">("ALL");
 
-  // 🚀 API থেকে রিয়েল ডাটা ফেচ করা
   useEffect(() => {
     let isMounted = true;
 
@@ -67,12 +66,12 @@ export default function AdminUsersPage() {
     };
   }, []);
 
-  // ⚡ Ban / Unban Toggle Handler
+
   const handleStatusToggle = async (userId: string, currentStatus: string) => {
     setActionLoadingId(userId);
     
     const isCurrentlyActive = currentStatus?.toUpperCase() === "ACTIVE";
-    // ব্যাকএন্ড Enum অনুযায়ী বড় হাতের অক্ষরে পাঠানো হচ্ছে
+
     const nextStatus = isCurrentlyActive ? "BANNED" : "ACTIVE"; 
 
     try {
@@ -95,7 +94,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  // 📊 Calculate Dynamic Stats
+
   const totalUsers = users.length;
   const activeUsers = useMemo(
     () => users.filter((u) => u.activeStatus?.toUpperCase() === "ACTIVE").length,
@@ -106,7 +105,7 @@ export default function AdminUsersPage() {
     [users]
   );
 
-  // 🔎 Search and Filter Logic
+
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       const matchesSearch =
@@ -260,7 +259,6 @@ export default function AdminUsersPage() {
                         {/* User Profile Info */}
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
-                            {/* ✅ ফিক্স: avatar এর পরিবর্তে profilePhoto ব্যবহার করা হয়েছে */}
                             {user.profilePhoto ? (
                               <img
                                 src={user.profilePhoto}

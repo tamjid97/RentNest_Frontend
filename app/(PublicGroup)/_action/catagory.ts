@@ -4,8 +4,6 @@ import { cookies } from "next/headers";
 
 const handleApiResponse = async (res: Response) => {
     const contentType = res.headers.get("content-type");
-    
-    // যদি রেসপন্স JSON না হয়ে HTML বা অন্য কিছু হয়
     if (!contentType || !contentType.includes("application/json")) {
         const text = await res.text();
         console.error("Non-JSON response from backend:", text);
@@ -26,7 +24,6 @@ export const getCatagory = async () => {
     const accessToken = cookieStore.get("accessToken")?.value || null;
     
     try {
-        // হেডার তৈরি, টোকেন থাকলে কুকি পাঠানো হবে, না থাকলে ফাঁকা থাকবে
         const headers: Record<string, string> = {};
         if (accessToken) {
             headers["Cookie"] = `accessToken=${accessToken}`;

@@ -25,7 +25,7 @@ export default function RentalActionBox({
   price,
   landlord,
   initialStatus = "",
-  rentalRequestId, // 🌟 ২. প্রপটি রিসিভ করা হলো
+  rentalRequestId,
 }: RentalActionBoxProps) {
   const [isPending, startTransition] = useTransition();
   const [isPaymentPending, startPaymentTransition] = useTransition();
@@ -50,16 +50,14 @@ export default function RentalActionBox({
     });
   };
 
-  // 🌟 পেমেন্ট বাটনে ক্লিক করলে এই ফাংশন কাজ করবে
+
   const handlePayment = () => {
-    // আইডি না থাকলে কলই হবে না
     if (!rentalRequestId) {
       alert("Error: Rental Request ID is missing!");
       return;
     }
 
     startPaymentTransition(async () => {
-      // 🌟 ৩. pay ফাংশনে rentalRequestId পাস করা হলো
       const result = await pay(rentalRequestId); 
       if (result && !result.success) {
         alert(result.message || "Something went wrong with payment.");

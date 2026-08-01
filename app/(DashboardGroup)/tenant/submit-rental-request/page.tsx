@@ -9,16 +9,13 @@ import {
   Bath,
   Maximize2,
   ShieldCheck,
-  CreditCard,
   Send,
   Home,
-  CheckCircle2,
-  ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-// 🌟 Dummy Property Data (The property tenant wants to rent)
+
 const PROPERTY_DETAILS = {
   id: "aff955e7-32dc-4daf-9c07-db9ca6d9abb4",
   title: "Modern Apartment with City View",
