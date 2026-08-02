@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { motion, type Variants } from "framer-motion";
 import { 
   Building2, 
@@ -14,8 +15,9 @@ import {
   Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
-// 🌟 Enterprise-grade Landlord Features Data
+// 🌟 Enterprise-grade Landlord Features Data with Routes
 const landlordFeatures = [
   {
     title: "My Listed Properties",
@@ -24,6 +26,7 @@ const landlordFeatures = [
     color: "text-emerald-600 dark:text-emerald-400",
     bgGradient: "from-emerald-500/15 to-emerald-500/5 dark:from-emerald-500/20 dark:to-emerald-500/5",
     hoverBorder: "hover:border-emerald-500/40 dark:hover:border-emerald-500/50",
+    route: "/landlord/properties",
   },
   {
     title: "Add New Listing",
@@ -32,6 +35,7 @@ const landlordFeatures = [
     color: "text-blue-600 dark:text-blue-400",
     bgGradient: "from-blue-500/15 to-blue-500/5 dark:from-blue-500/20 dark:to-blue-500/5",
     hoverBorder: "hover:border-blue-500/40 dark:hover:border-blue-500/50",
+    route: "/landlord/add-property",
   },
   {
     title: "Tenant Inquiries",
@@ -40,6 +44,7 @@ const landlordFeatures = [
     color: "text-amber-600 dark:text-amber-400",
     bgGradient: "from-amber-500/15 to-amber-500/5 dark:from-amber-500/20 dark:to-amber-500/5",
     hoverBorder: "hover:border-amber-500/40 dark:hover:border-amber-500/50",
+    route: "/landlord/inquiries",
   },
   {
     title: "Rent & Payments",
@@ -48,6 +53,7 @@ const landlordFeatures = [
     color: "text-indigo-600 dark:text-indigo-400",
     bgGradient: "from-indigo-500/15 to-indigo-500/5 dark:from-indigo-500/20 dark:to-indigo-500/5",
     hoverBorder: "hover:border-indigo-500/40 dark:hover:border-indigo-500/50",
+    route: "/landlord/payments",
   },
   {
     title: "Maintenance Requests",
@@ -56,6 +62,7 @@ const landlordFeatures = [
     color: "text-rose-600 dark:text-rose-400",
     bgGradient: "from-rose-500/15 to-rose-500/5 dark:from-rose-500/20 dark:to-rose-500/5",
     hoverBorder: "hover:border-rose-500/40 dark:hover:border-rose-500/50",
+    route: "/landlord/maintenance",
   },
   {
     title: "Performance Analytics",
@@ -64,6 +71,7 @@ const landlordFeatures = [
     color: "text-teal-600 dark:text-teal-400",
     bgGradient: "from-teal-500/15 to-teal-500/5 dark:from-teal-500/20 dark:to-teal-500/5",
     hoverBorder: "hover:border-teal-500/40 dark:hover:border-teal-500/50",
+    route: "/landlord/analytics",
   },
 ];
 
@@ -86,6 +94,13 @@ const itemVariants: Variants = {
 };
 
 export default function LandlordDashboard() {
+  const router = useRouter();
+
+  const handleCardClick = (title: string, route: string) => {
+    toast.info(`Opening ${title}...`);
+    router.push(route);
+  };
+
   return (
     <div className="space-y-10 pb-12 font-sans transition-colors duration-300">
       
@@ -96,10 +111,8 @@ export default function LandlordDashboard() {
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-amber-50/80 via-white to-slate-100 p-8 shadow-xl shadow-slate-200/50 dark:bg-[#07090e] dark:from-slate-900 dark:via-[#07090e] dark:to-[#0a0f16] dark:shadow-2xl sm:p-12 sm:py-16 border border-amber-200/60 dark:border-amber-500/20"
       >
-        {/* Subtle glowing borders and mesh background */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 dark:from-transparent dark:to-transparent z-0 pointer-events-none" />
         
-        {/* Animated Background Glowing Orbs */}
         <motion.div 
           animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -163,6 +176,7 @@ export default function LandlordDashboard() {
                 key={index}
                 variants={itemVariants}
                 whileHover={{ y: -5 }}
+                onClick={() => handleCardClick(feature.title, feature.route)}
                 className={cn(
                   "group relative cursor-pointer overflow-hidden rounded-2xl p-7 transition-all duration-300",
                   "bg-white/80 dark:bg-[#0a0f16]/80 backdrop-blur-xl",
@@ -171,7 +185,6 @@ export default function LandlordDashboard() {
                   feature.hoverBorder
                 )}
               >
-                {/* Subtle Gradient Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-100/60 via-transparent to-amber-50/30 opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:from-white/5 dark:to-transparent" />
                 
                 <div className="relative z-10 flex flex-col h-full">
@@ -202,7 +215,6 @@ export default function LandlordDashboard() {
           })}
         </motion.div>
       </div>
-      
     </div>
   );
 }

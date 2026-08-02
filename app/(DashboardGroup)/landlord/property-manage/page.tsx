@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createProperty, deleteProperty, getProperties, updateProperty } from "../_action/propartyAction";
+import { toast } from "sonner";
 
 interface Category {
   id: string;
@@ -88,6 +89,7 @@ export default function LandlordPropertiesPage() {
         setProperties(parsePropertiesResponse(propData));
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error("Failed to load data");
       } finally {
         setLoading(false);
         setLoadingCategories(false);
@@ -102,21 +104,15 @@ export default function LandlordPropertiesPage() {
     
     const formData = new FormData(e.currentTarget);
     
-    // 🔍 কনসোল লগ: ফর্ম থেকে কী ডাটা পাঠানো হচ্ছে তা দেখার জন্য
-    console.log("=== CREATE PROPERTY DEBUG (FRONTEND) ===");
-    console.log("FormData Entries:", Object.fromEntries(formData.entries()));
-    console.log("Amenities Selected:", formData.getAll("amenities"));
-
     const res = await createProperty(formData); 
-    console.log("Create Property Server Response:", res);
     
     if (res.success) {
       setIsAddModalOpen(false);
       const updatedProps = await getProperties();
       setProperties(parsePropertiesResponse(updatedProps));
-      alert("Property Added Successfully!");
+      toast.success("Property Added Successfully!");
     } else {
-      alert(res.message || "Failed to add property");
+      toast.error(res.message || "Failed to add property");
     }
     setIsActionLoading(false);
   };
@@ -126,19 +122,15 @@ export default function LandlordPropertiesPage() {
     setIsActionLoading(true);
     
     const formData = new FormData(e.currentTarget);
-    
-  
-
     const res = await updateProperty(id, formData); 
-    console.log("Update Property Server Response:", res);
     
     if (res.success) {
       setEditModalId(null);
       const updatedProps = await getProperties();
       setProperties(parsePropertiesResponse(updatedProps));
-      alert("Property Updated Successfully!");
+      toast.success("Property Updated Successfully!");
     } else {
-      alert(res.message || "Failed to update property");
+      toast.error(res.message || "Failed to update property");
     }
     setIsActionLoading(false);
   };
@@ -147,13 +139,12 @@ export default function LandlordPropertiesPage() {
     if (!confirm("Are you sure you want to delete this property?")) return;
     
     const res = await deleteProperty(id);
-    console.log("Delete Property Response:", res);
 
     if (res.success) {
       setProperties(properties.filter(p => p.id !== id));
-      alert("Property Deleted!");
+      toast.success("Property Deleted Successfully!");
     } else {
-      alert(res.message || "Failed to delete");
+      toast.error(res.message || "Failed to delete property");
     }
   };
 

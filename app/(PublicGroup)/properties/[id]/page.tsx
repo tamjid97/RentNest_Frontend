@@ -7,9 +7,6 @@ import {
   Building2,
   ArrowLeft,
   MapPin,
-  Bed,
-  Bath,
-  Maximize2,
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -258,19 +255,6 @@ export default async function PropertyDetailsPage({
                 </p>
               </div>
 
-              {/* Specs Grid */}
-              <div className="grid grid-cols-3 gap-4 py-4 px-5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">
-                <div className="flex items-center gap-2">
-                  <Bed className="w-4 h-4 text-amber-500 shrink-0" /> {typeof property.beds === "number" ? property.beds : 0} Beds
-                </div>
-                <div className="flex items-center gap-2">
-                  <Bath className="w-4 h-4 text-amber-500 shrink-0" /> {typeof property.baths === "number" ? property.baths : 0} Baths
-                </div>
-                <div className="flex items-center gap-2">
-                  <Maximize2 className="w-4 h-4 text-amber-500 shrink-0" /> {property.sqft ?? "N/A"} sqft
-                </div>
-              </div>
-
               {/* Description */}
               <div className="space-y-3">
                 <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
@@ -316,7 +300,7 @@ export default async function PropertyDetailsPage({
               landlord={property?.landlord}
               initialStatus={currentStatus}
               rentalRequestId={currentRentalRequestId} 
-              isAvailable={propertyAvailability} // 🌟 প্রপার্টির স্ট্যাটাস এখানে পাস করে দেওয়া হলো, ফলে এখন আনঅ্যাভেলেবল হলে পেমেন্ট বাটন হাইড হয়ে যাবে!
+              isAvailable={propertyAvailability}
             />
           </div>
 

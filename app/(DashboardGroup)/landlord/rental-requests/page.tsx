@@ -20,29 +20,33 @@ import {
   getLandlordRentalRequestsAction, 
   updateRentalRequestStatusAction 
 } from "../_action/rentalAction";
+import { toast } from "sonner";
 
-// 🌟 প্রপার টাইপ ডিফিনিশন (any টাইপ এড়াতে)
-export interface Tenant {
-  name: string;
-  email: string;
-  phone: string;
-  avatar?: string;
+// 🌟 ব্যাকএন্ডের জেসন স্ট্রাকচার অনুযায়ী সঠিক টাইপ ডিফিনিশন
+export interface Client {
+  id: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  profilePhoto?: string | null;
 }
 
 export interface Property {
-  title: string;
-  location: string;
+  id: string;
+  title?: string;
+  description?: string;
+  location?: string;
+  price?: number;
   image?: string;
-  rent: string;
 }
 
 export interface RentalRequest {
   id: string;
-  tenant: Tenant;
-  property: Property;
-  moveInDate: string;
-  duration: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
+  rentStartDate?: string;
+  rentEndDate?: string;
+  client?: Client;
+  property?: Property;
 }
 
 export default function LandlordRentalRequestsPage() {
@@ -53,42 +57,53 @@ export default function LandlordRentalRequestsPage() {
   const [isPending, startTransition] = useTransition();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  // পেজ লোড হওয়ার সাথে সাথে ব্যাকএন্ড থেকে রিয়েল ডেটা ফেচ করা
+  // পেজ লোড হওয়ার সাথে সাথে ব্যাকএন্ড থেকে রিয়েল ডেটা ফেচ করা
   useEffect(() => {
     async function fetchRequests() {
       setIsLoadingList(true);
-      const result = await getLandlordRentalRequestsAction();
-      if (result.success && result.data) {
-        setRequests(Array.isArray(result.data) ? (result.data as RentalRequest[]) : []);
-      } else {
+      try {
+        const result = await getLandlordRentalRequestsAction();
+        if (result?.success && result?.data) {
+          setRequests(Array.isArray(result.data) ? (result.data as RentalRequest[]) : []);
+        } else {
+          setRequests([]);
+        }
+      } catch {
         setRequests([]);
+        toast.error("Failed to load rental requests.");
+      } finally {
+        setIsLoadingList(false);
       }
-      setIsLoadingList(false);
     }
     fetchRequests();
   }, []);
 
-  // রিকোয়েস্ট স্ট্যাটাস আপডেট হ্যান্ডলার (Approve / Reject)
+  // রিকোয়েস্ট স্ট্যাটাস আপডেট হ্যান্ডলার (Approve / Reject) with Toast
   const handleStatusUpdate = (id: string, newStatus: "APPROVED" | "REJECTED") => {
     setLoadingId(id);
     startTransition(async () => {
-      const result = await updateRentalRequestStatusAction(id, newStatus);
-      
-      if (result.success) {
-        setRequests((prev) =>
-          prev.map((req) => (req.id === id ? { ...req, status: newStatus } : req))
-        );
-        alert(result.message || `Rental request successfully ${newStatus.toLowerCase()}!`);
-      } else {
-        alert(result.message || "Failed to update request status.");
+      try {
+        const result = await updateRentalRequestStatusAction(id, newStatus);
+        
+        if (result?.success) {
+          setRequests((prev) =>
+            prev.map((req) => (req.id === id ? { ...req, status: newStatus } : req))
+          );
+          toast.success(result.message || `Rental request successfully ${newStatus.toLowerCase()}!`);
+        } else {
+          toast.error(result?.message || "Failed to update request status.");
+        }
+      } catch {
+        toast.error("Something went wrong. Please try again.");
+      } finally {
+        setLoadingId(null);
       }
-      setLoadingId(null);
     });
   };
 
   // ফিল্টারিং লজিক (Search & Tabs)
   const filteredRequests = requests.filter((item) => {
-    const tenantName = item.tenant?.name || "";
+    const tenantName = item.client?.name || "";
     const propertyTitle = item.property?.title || "";
 
     const matchesSearch =
@@ -107,7 +122,7 @@ export default function LandlordRentalRequestsPage() {
   const rejectedCount = requests.filter((r) => r.status === "REJECTED").length;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto font-sans">
       
       {/* 🌟 Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800/80">
@@ -232,28 +247,40 @@ export default function LandlordRentalRequestsPage() {
                 filteredRequests.map((item) => {
                   const isLoadingThis = isPending && loadingId === item.id;
                   
+                  // Safe extraction matching backend JSON keys (`client` instead of `tenant`)
+                  const tenantName = item.client?.name || "Unknown Tenant";
+                  const tenantEmail = item.client?.email || "No email provided";
+                  const tenantPhone = item.client?.phone || "No phone provided";
+                  const tenantAvatar = item.client?.profilePhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop";
+
+                  const propertyTitle = item.property?.title || "Property Details";
+                  const propertyLocation = item.property?.location || "Location not specified";
+                  const propertyRent = item.property?.price ? `৳${item.property.price}` : "N/A";
+                  const propertyImage = item.property?.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop";
+
+                  const moveInDate = item.rentStartDate ? new Date(item.rentStartDate).toLocaleDateString() : "N/A";
+                  const endDate = item.rentEndDate ? new Date(item.rentEndDate).toLocaleDateString() : "N/A";
+
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-900/30 transition-colors group">
                       
                       {/* Tenant Profile */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          {item.tenant?.avatar && (
-                            <img
-                              src={item.tenant.avatar}
-                              alt={item.tenant?.name || "Tenant"}
-                              className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-500/30"
-                            />
-                          )}
-                          <div className="flex flex-col">
-                            <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-amber-500 transition-colors">
-                              {item.tenant?.name}
+                          <img
+                            src={tenantAvatar}
+                            alt={tenantName}
+                            className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-500/30 shrink-0"
+                          />
+                          <div className="flex flex-col overflow-hidden">
+                            <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-amber-500 transition-colors truncate">
+                              {tenantName}
                             </span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                              <Mail className="w-3 h-3 text-amber-500" /> {item.tenant?.email}
+                            <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate mt-0.5">
+                              <Mail className="w-3 h-3 text-amber-500 shrink-0" /> {tenantEmail}
                             </span>
                             <span className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                              <Phone className="w-3 h-3 text-amber-500" /> {item.tenant?.phone}
+                              <Phone className="w-3 h-3 text-amber-500 shrink-0" /> {tenantPhone}
                             </span>
                           </div>
                         </div>
@@ -262,22 +289,20 @@ export default function LandlordRentalRequestsPage() {
                       {/* Property Info */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          {item.property?.image && (
-                            <img
-                              src={item.property.image}
-                              alt={item.property?.title || "Property"}
-                              className="w-12 h-10 rounded-xl object-cover shrink-0"
-                            />
-                          )}
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-slate-800 dark:text-slate-200 line-clamp-1">
-                              {item.property?.title}
+                          <img
+                            src={propertyImage}
+                            alt={propertyTitle}
+                            className="w-12 h-10 rounded-xl object-cover shrink-0 border border-slate-200 dark:border-slate-800"
+                          />
+                          <div className="flex flex-col overflow-hidden">
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                              {propertyTitle}
                             </span>
-                            <span className="text-xs text-slate-400">
-                              {item.property?.location}
+                            <span className="text-xs text-slate-400 truncate">
+                              {propertyLocation}
                             </span>
                             <span className="text-xs text-amber-600 dark:text-amber-400 font-bold mt-0.5">
-                              {item.property?.rent}
+                              {propertyRent}
                             </span>
                           </div>
                         </div>
@@ -287,10 +312,10 @@ export default function LandlordRentalRequestsPage() {
                       <td className="py-4 px-6">
                         <div className="flex flex-col text-xs space-y-1">
                           <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-amber-500" /> {item.moveInDate}
+                            <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" /> Start: {moveInDate}
                           </span>
                           <span className="text-slate-400 font-medium">
-                            Duration: {item.duration}
+                            End: <span className="text-slate-600 dark:text-slate-300 font-semibold">{endDate}</span>
                           </span>
                         </div>
                       </td>

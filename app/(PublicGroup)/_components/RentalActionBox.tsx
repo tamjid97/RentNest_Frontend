@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CreditCard, ShieldCheck, Ban } from "lucide-react";
 import { createRentalRequestAction } from "../_action/rentalAction";
 import { pay } from "../_action/payments";
+import { toast } from "sonner";
 
 interface Landlord {
   name?: string;
@@ -18,7 +19,7 @@ interface RentalActionBoxProps {
   landlord?: Landlord | string;
   initialStatus?: string;
   rentalRequestId?: string | null; 
-  isAvailable?: string | boolean; // 🌟 স্টริง বা বুলিয়ান উভয় টাইপ হ্যান্ডেল করার জন্য
+  isAvailable?: string | boolean;
 }
 
 export default function RentalActionBox({
@@ -39,7 +40,7 @@ export default function RentalActionBox({
 
   const handleRentalRequest = () => {
     if (isPropertyUnavailable) {
-      alert("This property is currently unavailable.");
+      toast.error("This property is currently unavailable.");
       return;
     }
 
@@ -54,28 +55,28 @@ export default function RentalActionBox({
       
       if (result.success) {
         setRequestStatus("PENDING");
-        alert(result.message || "Rental request submitted successfully!");
+        toast.success(result.message || "Rental request submitted successfully!");
       } else {
-        alert(result.message || "Failed to submit rental request.");
+        toast.error(result.message || "Failed to submit rental request.");
       }
     });
   };
 
   const handlePayment = () => {
     if (isPropertyUnavailable) {
-      alert("Error: This property is unavailable.");
+      toast.error("Error: This property is unavailable.");
       return;
     }
 
     if (!rentalRequestId) {
-      alert("Error: Rental Request ID is missing!");
+      toast.error("Error: Rental Request ID is missing!");
       return;
     }
 
     startPaymentTransition(async () => {
       const result = await pay(rentalRequestId); 
       if (result && !result.success) {
-        alert(result.message || "Something went wrong with payment.");
+        toast.error(result.message || "Something went wrong with payment.");
       }
     });
   };
@@ -123,7 +124,6 @@ export default function RentalActionBox({
 
       {/* Action Buttons */}
       <div className="space-y-3 pt-2">
-        {/* 🌟 সবার উপরে এখন এই চেক কাজ করবে, ফলে আনঅ্যাভেলেবল হলে পেমেন্ট বাটন আসবে না */}
         {isPropertyUnavailable ? (
           <div className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-extrabold text-xs">
             <Ban className="w-4 h-4" /> Property Already Booked / Unavailable
