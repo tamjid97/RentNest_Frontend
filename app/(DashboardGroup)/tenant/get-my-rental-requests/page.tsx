@@ -23,7 +23,6 @@ import { Input } from "@/components/ui/input";
 import { getMyRentalRequest } from "../../tenant/_action/rentalAction";
 import { pay } from "@/app/(PublicGroup)/_action/payments";
 
-
 export interface Property {
   id?: string;
   title?: string;
@@ -101,7 +100,6 @@ export default function TenantRentalRequestsPage() {
     });
   };
 
-  // 🌟 এখানে লোকাল রাউটের বদলে সরাসরি `pay` সার্ভার অ্যাকশন কল করা হয়েছে
   const handlePaymentRedirect = async (item: MyRentalRequest) => {
     try {
       setPayingId(item.id);
@@ -113,7 +111,7 @@ export default function TenantRentalRequestsPage() {
       }
     } catch (error) {
       if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
-        return; // Next.js redirect এরর হ্যান্ডেল করার জন্য
+        return; 
       }
       console.error("Payment redirect failed:", error);
     } finally {
@@ -142,7 +140,7 @@ export default function TenantRentalRequestsPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
       
-      {/* 🌟 Top Header */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/20">
@@ -182,7 +180,7 @@ export default function TenantRentalRequestsPage() {
         </div>
       </div>
 
-      {/* 🌟 Search & Filter Section */}
+      {/* Search & Filter Section */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -243,7 +241,7 @@ export default function TenantRentalRequestsPage() {
         </div>
       </div>
 
-      {/* 🌟 Requests Table Container */}
+      {/* Requests Table Container */}
       <div className="bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -314,7 +312,7 @@ export default function TenantRentalRequestsPage() {
                         </div>
                       </td>
 
-                      {/* Landlord Info */}
+                      {/* Landlord Info - Updated with correct nested property optional chaining */}
                       <td className="py-4 px-6">
                         <div className="flex flex-col">
                           <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">

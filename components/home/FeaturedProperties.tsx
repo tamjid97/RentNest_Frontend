@@ -58,10 +58,11 @@ export default function FeaturedProperties() {
       try {
         const response = await getProperty();
         if (response.success && response.data) {
-          const sortedLatest = response.data
-            .sort((a: ISproperty, b: ISproperty) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          // সবার আগে করা (oldest) ৩টি প্রপার্টি পেতে ascending order-এ সর্ট করা হয়েছে
+          const sortedOldest = response.data
+            .sort((a: ISproperty, b: ISproperty) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
             .slice(0, 3);
-          setProperties(sortedLatest);
+          setProperties(sortedOldest);
         }
       } catch (error) {
         console.error("Failed to fetch featured properties:", error);
@@ -96,7 +97,7 @@ export default function FeaturedProperties() {
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 backdrop-blur-md shadow-sm uppercase tracking-wide">
             <Sparkles className="h-4 w-4" />
-            <span>Latest Additions</span>
+            <span>Classic Collections</span>
           </span>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2]">
@@ -110,7 +111,7 @@ export default function FeaturedProperties() {
           </h2>
 
           <p className="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base md:px-8">
-            Explore our newest verified real estate listings tailored just for your lifestyle.
+            Explore our foundational real estate listings tailored just for your lifestyle.
           </p>
         </motion.div>
 
@@ -135,7 +136,7 @@ export default function FeaturedProperties() {
               <motion.div key={prop.id} variants={itemVariants} className="h-full">
                 <div className="group bg-white dark:bg-slate-950 rounded-[2rem] border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-300 flex flex-col h-full">
                   
-                  {/* Image Container - No padding/border, edge to edge */}
+                  {/* Image Container */}
                   <div className="relative h-64 w-full overflow-hidden">
                     <img 
                       src={prop.image} 
