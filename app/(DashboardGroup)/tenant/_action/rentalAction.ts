@@ -9,7 +9,6 @@ type ResponseState = {
     data?: unknown;
 };
 
-
 export async function getMyRentalRequest(): Promise<ResponseState> {
     try {
         const cookieStore = await cookies();
@@ -32,9 +31,13 @@ export async function getMyRentalRequest(): Promise<ResponseState> {
         });
 
         const textResponse = await res.text();
-        let result;
+        
+        // 🔍 টার্মিনালে ব্যাকএন্ডের আসল রেসপন্স দেখতে এটি প্রিন্ট করা হলো
+        console.log("=== BACKEND RENTALS RAW RESPONSE ===", textResponse);
+
+        let parsedData;
         try {
-            result = JSON.parse(textResponse);
+            parsedData = JSON.parse(textResponse);
         } catch (e) {
             return {
                 success: res.ok,
@@ -43,7 +46,21 @@ export async function getMyRentalRequest(): Promise<ResponseState> {
             };
         }
 
-        return result;
+        // ব্যাকএন্ড থেকে ডেটা সরাসরি অ্যারে (`[...]`) আসলে তা standard format-এ রূপান্তর করা
+        if (Array.isArray(parsedData)) {
+            return {
+                success: res.ok,
+                message: "Rental requests fetched successfully.",
+                data: parsedData,
+            };
+        }
+
+        // যদি ব্যাকএন্ড অবজেক্ট আকারে দেয়
+        return {
+            success: parsedData?.success ?? res.ok,
+            message: parsedData?.message || "Rental requests fetched successfully.",
+            data: parsedData?.data ?? parsedData,
+        };
     } catch (error) {
         console.error("Get rental requests error:", error);
         return {
@@ -52,4 +69,3 @@ export async function getMyRentalRequest(): Promise<ResponseState> {
         };
     }
 }
-

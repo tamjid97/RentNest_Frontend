@@ -64,8 +64,13 @@ export default function TenantRentalRequestsPage() {
     try {
       const result = await getMyRentalRequest();
       startTransition(() => {
+        // ডেটা অ্যারে ফরম্যাট যেভাবেই আসুক না কেন তা সঠিকভাবে ধরার ব্যবস্থা
         if (result?.success && Array.isArray(result.data)) {
           setRequests(result.data as MyRentalRequest[]);
+        } else if (Array.isArray(result?.data)) {
+          setRequests(result.data as MyRentalRequest[]);
+        } else if (Array.isArray(result)) {
+          setRequests(result as MyRentalRequest[]);
         } else {
           setRequests([]);
         }
@@ -312,7 +317,7 @@ export default function TenantRentalRequestsPage() {
                         </div>
                       </td>
 
-                      {/* Landlord Info - Updated with correct nested property optional chaining */}
+                      {/* Landlord Info */}
                       <td className="py-4 px-6">
                         <div className="flex flex-col">
                           <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
