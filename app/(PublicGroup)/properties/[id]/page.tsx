@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { getPropertyById } from "../../_action/propertyAction";
 import RentalActionBox from "../../_components/RentalActionBox";
 
-//  Interfaces matching your exact backend response
+// Interfaces matching your exact backend response
 interface Landlord {
   id?: string;
   name?: string;
@@ -53,6 +53,7 @@ interface PropertyData {
   status?: string;
   currentUserRequestStatus?: string;
   rentalRequestId?: string; 
+  currentRentalRequestId?: string;
   myRequest?: { status?: string; id?: string; [key: string]: unknown };
   rentalRequest?: { status?: string; id?: string; [key: string]: unknown };
   rentalRequests?: Array<{ status?: string; id?: string; [key: string]: unknown }>;
@@ -60,7 +61,7 @@ interface PropertyData {
   [key: string]: unknown;
 }
 
-//  Safe helper function using `unknown` instead of `any`
+// Safe helper function using `unknown` instead of `any`
 const renderValue = (value: unknown, fallback: string = ""): string => {
   if (value === null || value === undefined) return fallback;
   if (typeof value === "object") {
@@ -108,12 +109,9 @@ const getStatusFromProperty = (prop: PropertyData): string => {
 
 // Updated helper to extract rental request ID
 const getRequestIdFromProperty = (prop: PropertyData): string => {
-
   if (typeof prop.currentRentalRequestId === "string" && prop.currentRentalRequestId.trim() !== "") {
     return prop.currentRentalRequestId;
   }
-  
-
   if (typeof prop.rentalRequestId === "string" && prop.rentalRequestId.trim() !== "") {
     return prop.rentalRequestId;
   }
@@ -143,6 +141,7 @@ const getRequestIdFromProperty = (prop: PropertyData): string => {
 
   return ""; 
 };
+
 export default async function PropertyDetailsPage({
   params,
 }: {
@@ -198,9 +197,10 @@ export default async function PropertyDetailsPage({
       ? property.image
       : "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop";
 
-  // 🌟 Safe extraction of status and request ID
+  // Safe extraction of status and request ID
   const currentStatus = getStatusFromProperty(property);
-  const currentRentalRequestId = getRequestIdFromProperty(property); // হেল্পার ফাংশন এখানে কল করা হয়েছে
+  const currentRentalRequestId = getRequestIdFromProperty(property);
+  const propertyAvailability = typeof property.isAvailable === "string" ? property.isAvailable : "AVAILABLE";
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#04060a] text-slate-900 dark:text-slate-100 pb-20">
@@ -217,8 +217,12 @@ export default async function PropertyDetailsPage({
             </Button>
           </Link>
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              {typeof property.isAvailable === "string" ? property.isAvailable : "AVAILABLE"}
+            <span className={`px-3 py-1 rounded-full text-xs font-extrabold border ${
+              propertyAvailability === "AVAILABLE" 
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" 
+                : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+            }`}>
+              {propertyAvailability}
             </span>
           </div>
         </div>
@@ -311,8 +315,8 @@ export default async function PropertyDetailsPage({
               price={Number(property?.price || 0)}
               landlord={property?.landlord}
               initialStatus={currentStatus}
-              // 🌟 ভেরিয়েবলটি এখানে পাস করা হয়েছে, টাইপস্ক্রিপ্ট এরর আর আসবে না
               rentalRequestId={currentRentalRequestId} 
+              isAvailable={propertyAvailability} // 🌟 প্রপার্টির স্ট্যাটাস এখানে পাস করে দেওয়া হলো, ফলে এখন আনঅ্যাভেলেবল হলে পেমেন্ট বাটন হাইড হয়ে যাবে!
             />
           </div>
 

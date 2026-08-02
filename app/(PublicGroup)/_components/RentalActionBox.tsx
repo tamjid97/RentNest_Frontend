@@ -18,7 +18,7 @@ interface RentalActionBoxProps {
   landlord?: Landlord | string;
   initialStatus?: string;
   rentalRequestId?: string | null; 
-  isAvailable?: string; // 🌟 প্রপার্টির স্ট্যাটাস রিসিভ করার জন্য এটি যোগ করা হলো
+  isAvailable?: string | boolean; // 🌟 স্টริง বা বুলিয়ান উভয় টাইপ হ্যান্ডেল করার জন্য
 }
 
 export default function RentalActionBox({
@@ -33,8 +33,12 @@ export default function RentalActionBox({
   const [isPaymentPending, startPaymentTransition] = useTransition();
   const [requestStatus, setRequestStatus] = useState<string>(initialStatus);
 
+  // 🌟 প্রপার্টি আনঅ্যাভেলেবল কিনা তা নিখুঁতভাবে চেক করার জন্য
+  const normalizedAvailability = typeof isAvailable === "string" ? isAvailable.toUpperCase() : isAvailable;
+  const isPropertyUnavailable = normalizedAvailability === "UNAVAILABLE" || normalizedAvailability === false || normalizedAvailability === "FALSE";
+
   const handleRentalRequest = () => {
-    if (isAvailable === "UNAVAILABLE") {
+    if (isPropertyUnavailable) {
       alert("This property is currently unavailable.");
       return;
     }
@@ -58,6 +62,11 @@ export default function RentalActionBox({
   };
 
   const handlePayment = () => {
+    if (isPropertyUnavailable) {
+      alert("Error: This property is unavailable.");
+      return;
+    }
+
     if (!rentalRequestId) {
       alert("Error: Rental Request ID is missing!");
       return;
@@ -114,7 +123,8 @@ export default function RentalActionBox({
 
       {/* Action Buttons */}
       <div className="space-y-3 pt-2">
-        {isAvailable === "UNAVAILABLE" ? (
+        {/* 🌟 সবার উপরে এখন এই চেক কাজ করবে, ফলে আনঅ্যাভেলেবল হলে পেমেন্ট বাটন আসবে না */}
+        {isPropertyUnavailable ? (
           <div className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-extrabold text-xs">
             <Ban className="w-4 h-4" /> Property Already Booked / Unavailable
           </div>
