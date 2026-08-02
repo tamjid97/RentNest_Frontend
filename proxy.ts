@@ -9,6 +9,7 @@ import { getNewAccessToken } from "./components/service/refreshToken";
 const AUTH_ROUTES = ["/login", "/register"];
 const PUBLIC_ROUTES = ["/", "/properties", "/categories", "/how-it-work"];
 
+
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const cookieStore = await cookies();
@@ -72,12 +73,13 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
+
     if (pathname.startsWith("/tenant") && userRole !== "TENANT") {
-        return NextResponse.redirect(new URL('/not-found', request.url));
+        return NextResponse.redirect(new URL('/', request.url));
     } else if (pathname.startsWith("/landlord") && userRole !== "LANDLORD") {
-        return NextResponse.redirect(new URL('/not-found', request.url));
+        return NextResponse.redirect(new URL('/', request.url));
     } else if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
-        return NextResponse.redirect(new URL('/not-found', request.url));
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
     const response = NextResponse.next();

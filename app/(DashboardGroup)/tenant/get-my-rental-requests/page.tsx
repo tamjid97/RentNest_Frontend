@@ -16,10 +16,12 @@ import {
   ChevronRight,
   RefreshCw,
   Eye,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getMyRentalRequest } from "../../tenant/_action/rentalAction";
+import { pay } from "@/app/(PublicGroup)/_action/payments";
 
 
 export interface Property {
@@ -47,14 +49,17 @@ export interface MyRentalRequest {
   duration?: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
   createdAt?: string;
+  isPaid?: boolean;
+  paymentStatus?: string;
+  paymentUrl?: string;
 }
 
 export default function TenantRentalRequestsPage() {
-
   const [requests, setRequests] = useState<MyRentalRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const fetchRequests = async () => {
     try {
@@ -78,7 +83,6 @@ export default function TenantRentalRequestsPage() {
     }
   };
 
- 
   const handleRefresh = () => {
     setIsLoading(true);
     fetchRequests();
@@ -95,6 +99,26 @@ export default function TenantRentalRequestsPage() {
       month: "short",
       year: "numeric",
     });
+  };
+
+  // 🌟 এখানে লোকাল রাউটের বদলে সরাসরি `pay` সার্ভার অ্যাকশন কল করা হয়েছে
+  const handlePaymentRedirect = async (item: MyRentalRequest) => {
+    try {
+      setPayingId(item.id);
+      
+      const result = await pay(item.id);
+
+      if (result && !result.success) {
+        alert(result.message || "Failed to initiate payment. Please try again.");
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+        return; // Next.js redirect এরর হ্যান্ডেল করার জন্য
+      }
+      console.error("Payment redirect failed:", error);
+    } finally {
+      setPayingId(null);
+    }
   };
 
   const filteredRequests = requests.filter((item) => {
@@ -254,6 +278,7 @@ export default function TenantRentalRequestsPage() {
                 filteredRequests.map((item) => {
                   const propImage = item.property?.images?.[0] || item.property?.image;
                   const price = item.property?.price || item.property?.rent;
+                  const isAlreadyPaid = item.isPaid || item.paymentStatus === "PAID";
 
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-900/30 transition-colors group">
@@ -344,17 +369,36 @@ export default function TenantRentalRequestsPage() {
                         </span>
                       </td>
 
-                      {/* Details Action Button */}
+                      {/* Pay / Paid & Details Action Buttons */}
                       <td className="py-4 px-6 text-right">
-                        <Link href={`/tenant/get-my-rental-requests/${item.id}`}>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-9 px-3 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all duration-200"
-                          >
-                            <Eye className="w-3.5 h-3.5 mr-1.5" /> Details
-                          </Button>
-                        </Link>
+                        <div className="flex items-center justify-end gap-2">
+                          {item.status === "APPROVED" && (
+                            isAlreadyPaid ? (
+                              <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-xs font-bold">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Paid
+                              </span>
+                            ) : (
+                              <Button
+                                size="sm"
+                                disabled={payingId === item.id}
+                                onClick={() => handlePaymentRedirect(item)}
+                                className="h-9 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all duration-200 shadow-sm shadow-emerald-600/20"
+                              >
+                                <CreditCard className="w-3.5 h-3.5 mr-1.5" /> 
+                                {payingId === item.id ? "Redirecting..." : "Pay"}
+                              </Button>
+                            )
+                          )}
+                          <Link href={`/tenant/get-my-rental-requests/${item.id}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-9 px-3 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition-all duration-200"
+                            >
+                              <Eye className="w-3.5 h-3.5 mr-1.5" /> Details
+                            </Button>
+                          </Link>
+                        </div>
                       </td>
 
                     </tr>

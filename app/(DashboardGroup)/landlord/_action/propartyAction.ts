@@ -9,10 +9,8 @@ export const isAccessTokenExist = async () => {
   return token;
 };
 
-
 const handleApiResponse = async (res: Response) => {
   const contentType = res.headers.get("content-type");
-
   
   if (!contentType || !contentType.includes("application/json")) {
     const text = await res.text();
@@ -35,7 +33,6 @@ interface ActionResponse {
 }
 
 // 1. Create Property Action
-
 export async function createProperty(formData: FormData): Promise<ActionResponse> {
   console.log("[Action] createProperty called 🚀");
   try {
@@ -59,15 +56,12 @@ export async function createProperty(formData: FormData): Promise<ActionResponse
       amenities: amenities.map((item) => String(item)),
     };
 
-
-
     const accessToken = await isAccessTokenExist();
     if (!accessToken) {
       return { success: false, message: "User not logged in!" };
     }
 
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties`;
-
 
     const response = await fetch(backendUrl, {
       method: "POST",
@@ -79,12 +73,9 @@ export async function createProperty(formData: FormData): Promise<ActionResponse
     });
 
     const result = (await handleApiResponse(response)) as ActionResponse;
-    
-    if (result.success) {
-
-      revalidateTag("properties", "max");
-    }
-
+if (result.success) {
+  revalidateTag("properties", "max"); 
+}
     return result;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Something went wrong";
@@ -92,11 +83,8 @@ export async function createProperty(formData: FormData): Promise<ActionResponse
   }
 }
 
-
 // 2. Get Properties Action
-
 export const getProperties = async () => {
-
   const accessToken = await isAccessTokenExist();
   
   if (!accessToken) {
@@ -106,7 +94,6 @@ export const getProperties = async () => {
 
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties`;
-
 
     const res = await fetch(backendUrl, {
       method: "GET",
@@ -127,11 +114,8 @@ export const getProperties = async () => {
   }
 };
 
-
 // 3. Update Property Action
-
 export const updateProperty = async (id: string, formData: FormData) => {
-
   const rawImage = formData.get("image") as string;
   const defaultImage = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop";
 
@@ -156,8 +140,6 @@ export const updateProperty = async (id: string, formData: FormData) => {
     image: rawImage && rawImage.trim() !== "" ? rawImage : defaultImage,
   };
 
-
-
   const accessToken = await isAccessTokenExist();
 
   if (!accessToken) {
@@ -179,10 +161,9 @@ export const updateProperty = async (id: string, formData: FormData) => {
 
     const result = await handleApiResponse(res);
     
-    if (result.success) {
-      console.log("[Action] Property updated successfully, revalidating tag");
-      revalidateTag("properties", "max"); 
-    }
+if (result.success) {
+  revalidateTag("properties", "max"); 
+}
     return result;
   } catch (error) {
     console.error("[Action] updateProperty Exception Error:", error);
@@ -191,7 +172,6 @@ export const updateProperty = async (id: string, formData: FormData) => {
 };
 
 // 4. Delete Property Action
-
 export const deleteProperty = async (id: string) => {
   console.log(`[Action] deleteProperty called for ID: ${id} 🗑️`);
   const accessToken = await isAccessTokenExist();
@@ -203,7 +183,6 @@ export const deleteProperty = async (id: string) => {
   try {
     const backendUrl = `${process.env.BACKEND_API_URL}/api/landlord/properties/${id}`;
 
-
     const res = await fetch(backendUrl, {
       method: "DELETE",
       headers: {
@@ -213,9 +192,9 @@ export const deleteProperty = async (id: string) => {
 
     const result = await handleApiResponse(res);
 
-    if (result.success) {
-      revalidateTag("properties", "max"); 
-    }
+if (result.success) {
+  revalidateTag("properties", "max"); 
+}
     return result;
   } catch (error) {
     return { success: false, message: "Failed to connect to the backend server!" };

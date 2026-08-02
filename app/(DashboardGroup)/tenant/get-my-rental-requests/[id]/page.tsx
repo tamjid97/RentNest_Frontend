@@ -139,7 +139,7 @@ export default function RentalRequestDetailsPage() {
       {/* Top Navigation & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="flex items-center gap-3.5">
-          <Link href="/tenant/rental-requests">
+          <Link href="/tenant/get-my-rental-requests">
             <Button variant="outline" size="icon" className="h-11 w-11 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-amber-500 hover:text-slate-950 transition-all">
               <ArrowLeft className="w-5 h-5" />
             </Button>
