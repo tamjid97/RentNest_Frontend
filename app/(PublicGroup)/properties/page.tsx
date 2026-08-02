@@ -13,6 +13,7 @@ import {
   Check,
   ShieldCheck,
   Building,
+  Ban,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +27,8 @@ interface ISproperty {
   location: string;
   price: number;
   amenities: string[];
-  image: string;
+  image?: string;
+  images?: string[]; // ব্যাকএন্ড থেকে অ্যারে আসতে পারে
   isAvailable: string;
   categoryId: string;
   landlordId: string;
@@ -39,13 +41,13 @@ interface ISproperty {
     id: string;
     name: string;
     email: string;
+    profilePhoto?: string | null;
   };
 }
 
 export default function PublicPropertiesPage() {
   const [properties, setProperties] = useState<ISproperty[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
@@ -77,7 +79,6 @@ export default function PublicPropertiesPage() {
     fetchProperties();
   }, []);
 
-
   const filteredProperties = properties.filter((property) => {
     const title = property?.title || "";
     const location = property?.location || "";
@@ -94,7 +95,6 @@ export default function PublicPropertiesPage() {
 
     return matchesSearch && matchesCategory;
   });
-
 
   const uniqueCategories = Array.isArray(properties)
     ? (Array.from(
@@ -220,110 +220,123 @@ export default function PublicPropertiesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProperties.map((property) => (
-              <div
-                key={property.id}
-                className="group relative bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5 hover:border-amber-500/40 transition-all duration-500 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="relative h-60 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+            {filteredProperties.map((property) => {
+              // ছবির ইউআরএল হ্যান্ডেল করার জন্য (image বা images অ্যারে থেকে যেকোনো একটা নেওয়া)
+              const displayImage = property.image || (property.images && property.images.length > 0 ? property.images[0] : "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop");
 
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/60 backdrop-blur-md text-amber-400 border border-white/10 flex items-center gap-1.5 shadow-lg">
-                        <Tag className="w-3 h-3 text-amber-400" />
-                        {property.category?.name || "Luxury"}
-                      </span>
-                    </div>
+              return (
+                <div
+                  key={property.id}
+                  className="group relative bg-white dark:bg-[#07090e] border border-slate-200/80 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1.5 hover:border-amber-500/40 transition-all duration-500 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="relative h-60 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
+                      <img
+                        src={displayImage}
+                        alt={property.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
 
-                    <div className="absolute bottom-4 left-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase backdrop-blur-md border shadow-lg flex items-center gap-1 ${
-                          property.isAvailable === "AVAILABLE"
-                            ? "bg-emerald-500/80 text-white border-emerald-400/30"
-                            : "bg-rose-500/80 text-white border-rose-400/30"
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                        {property.isAvailable === "AVAILABLE" ? "Available Now" : "Rented Out"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-xs font-semibold">
-                        <MapPin className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">{property.location}</span>
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/60 backdrop-blur-md text-amber-400 border border-white/10 flex items-center gap-1.5 shadow-lg">
+                          <Tag className="w-3 h-3 text-amber-400" />
+                          {property.category?.name || "Luxury"}
+                        </span>
                       </div>
 
-                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-white line-clamp-1 group-hover:text-amber-500 transition-colors">
-                        {property.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                      {property.description}
-                    </p>
-
-                    {property.amenities && property.amenities.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                        {property.amenities.map((amenity, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 capitalize flex items-center gap-1"
-                          >
-                            <Check className="w-3 h-3 text-amber-500" />
-                            {amenity}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-6 pt-0 space-y-4">
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 font-black text-xs flex items-center justify-center shadow-sm">
-                        {property.landlord?.name?.charAt(0) || "L"}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[10px] text-slate-400 font-medium">Listed By</span>
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                          {property.landlord?.name}
-                          <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                      <div className="absolute bottom-4 left-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase backdrop-blur-md border shadow-lg flex items-center gap-1 ${
+                            property.isAvailable === "AVAILABLE"
+                              ? "bg-emerald-500/80 text-white border-emerald-400/30"
+                              : "bg-rose-500/80 text-white border-rose-400/30"
+                          }`}
+                        >
+                          {property.isAvailable === "AVAILABLE" ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                          ) : (
+                            <Ban className="w-3 h-3 text-white" />
+                          )}
+                          {property.isAvailable === "AVAILABLE" ? "Available Now" : "Unavailable / Booked"}
                         </span>
                       </div>
                     </div>
+
+                    <div className="p-6 space-y-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-xs font-semibold">
+                          <MapPin className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{property.location}</span>
+                        </div>
+
+                        <h3 className="text-xl font-extrabold text-slate-900 dark:text-white line-clamp-1 group-hover:text-amber-500 transition-colors">
+                          {property.title}
+                        </h3>
+                      </div>
+
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                        {property.description}
+                      </p>
+
+                      {property.amenities && property.amenities.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          {property.amenities.slice(0, 3).map((amenity, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 capitalize flex items-center gap-1"
+                            >
+                              <Check className="w-3 h-3 text-amber-500" />
+                              {amenity}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Rent Fee</span>
-                      <div className="text-2xl font-black text-slate-900 dark:text-white flex items-baseline gap-0.5">
-                        <span className="text-amber-500 text-lg">৳</span>
-                        {property.price?.toLocaleString()}
-                        <span className="text-xs text-slate-400 font-medium">/mo</span>
+                  <div className="p-6 pt-0 space-y-4">
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 font-black text-xs flex items-center justify-center shadow-sm overflow-hidden">
+                          {property.landlord?.profilePhoto ? (
+                            <img src={property.landlord.profilePhoto} alt="Landlord" className="w-full h-full object-cover" />
+                          ) : (
+                            property.landlord?.name?.charAt(0) || "L"
+                          )}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-slate-400 font-medium">Listed By</span>
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                            {property.landlord?.name || "Property Owner"}
+                            <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    <Link href={`/properties/${property.id}`}>
-                      <Button className="h-11 px-6 rounded-2xl bg-slate-900 dark:bg-slate-800 hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 hover:text-slate-950 text-white font-extrabold text-xs transition-all duration-300 shadow-md">
-                        Explore <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <div>
+                        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Rent Fee</span>
+                        <div className="text-2xl font-black text-slate-900 dark:text-white flex items-baseline gap-0.5">
+                          <span className="text-amber-500 text-lg">৳</span>
+                          {property.price?.toLocaleString()}
+                          <span className="text-xs text-slate-400 font-medium">/mo</span>
+                        </div>
+                      </div>
 
-              </div>
-            ))}
+                      <Link href={`/properties/${property.id}`}>
+                        <Button className="h-11 px-6 rounded-2xl bg-slate-900 dark:bg-slate-800 hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 hover:text-slate-950 text-white font-extrabold text-xs transition-all duration-300 shadow-md">
+                          Explore <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+
+                </div>
+              );
+            })}
           </div>
         )}
 

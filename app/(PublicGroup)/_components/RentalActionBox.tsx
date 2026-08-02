@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { CreditCard, ShieldCheck } from "lucide-react";
+import { CreditCard, ShieldCheck, Ban } from "lucide-react";
 import { createRentalRequestAction } from "../_action/rentalAction";
 import { pay } from "../_action/payments";
 
@@ -18,6 +18,7 @@ interface RentalActionBoxProps {
   landlord?: Landlord | string;
   initialStatus?: string;
   rentalRequestId?: string | null; 
+  isAvailable?: string; // 🌟 প্রপার্টির স্ট্যাটাস রিসিভ করার জন্য এটি যোগ করা হলো
 }
 
 export default function RentalActionBox({
@@ -26,12 +27,18 @@ export default function RentalActionBox({
   landlord,
   initialStatus = "",
   rentalRequestId,
+  isAvailable = "AVAILABLE",
 }: RentalActionBoxProps) {
   const [isPending, startTransition] = useTransition();
   const [isPaymentPending, startPaymentTransition] = useTransition();
   const [requestStatus, setRequestStatus] = useState<string>(initialStatus);
 
   const handleRentalRequest = () => {
+    if (isAvailable === "UNAVAILABLE") {
+      alert("This property is currently unavailable.");
+      return;
+    }
+
     startTransition(async () => {
       const rentalPayload = {
         propertyId: propertyId,
@@ -49,7 +56,6 @@ export default function RentalActionBox({
       }
     });
   };
-
 
   const handlePayment = () => {
     if (!rentalRequestId) {
@@ -84,7 +90,7 @@ export default function RentalActionBox({
       {/* Price Tag */}
       <div className="flex items-baseline justify-between pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <span className="xsmall text-xs font-bold text-slate-400 uppercase tracking-wider">Monthly Rent</span>
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Monthly Rent</span>
           <h2 className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
             ৳{Number(price || 0).toLocaleString()}
           </h2>
@@ -108,7 +114,11 @@ export default function RentalActionBox({
 
       {/* Action Buttons */}
       <div className="space-y-3 pt-2">
-        {currentStatus === "APPROVED" ? (
+        {isAvailable === "UNAVAILABLE" ? (
+          <div className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-extrabold text-xs">
+            <Ban className="w-4 h-4" /> Property Already Booked / Unavailable
+          </div>
+        ) : currentStatus === "APPROVED" ? (
           <>
             <div className="w-full h-12 flex items-center justify-center rounded-2xl bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border border-emerald-600/20 font-extrabold text-xs">
               ✓ Request Approved by Landlord
@@ -125,7 +135,7 @@ export default function RentalActionBox({
             </Button>
           </>
         ) : currentStatus === "PENDING" || currentStatus === "REQUESTED" ? (
-          <Button disabled className="w-full h-12 rounded-2xl bg-amber-400/20 text-amber-600 dark:text-amber-400 border border-amber-400/30 font-extrabold text-xs cursor-not-allowed">
+          <Button disabled className="w-full h-14 rounded-2xl bg-amber-400/20 text-amber-600 dark:text-amber-400 border border-amber-400/30 font-extrabold text-xs cursor-not-allowed">
             ⏳ Rental Request Pending...
           </Button>
         ) : (
