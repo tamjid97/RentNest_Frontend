@@ -31,11 +31,11 @@ export const loginAction = async (prevState: LoginState, formData: FormData): Pr
 
     const result = await res.json();
 
-    // যদি ব্যাকএন্ড ফেইল করে বা ইউজার ডাটাবেজে না থাকে
+
     if (!res.ok || !result.success) {
       const errorMessage = result.message || "";
       
-      // ডাটাবেজের রেকর্ড নট ফাউন্ড এরর চেক করে ইউজার ফ্রেন্ডলি মেসেজ রিটার্ন করা
+
       if (errorMessage.includes("An operation failed because it depends on one or more records")) {
         return {
           success: false,
