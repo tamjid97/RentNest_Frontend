@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { 
   Eye, EyeOff, Mail, 
   Home, Lock, Sparkles, 
-  Loader2, ShieldAlert, UserCheck, KeyRound
+  Loader2, ShieldAlert, UserCheck, KeyRound, ArrowLeft
 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
@@ -70,7 +70,7 @@ export default function LoginForm() {
     }
   }, [state, router]);
 
-  // 🌟 ডেমো ফাস্ট লগইন হ্যান্ডলার (ক্লিক করার সাথে সাথেই ফিল আপ হয়ে সাবমিট হবে)
+  // 🌟 ডেমো ফাস্ট লগইন হ্যান্ডলার
   const handleDemoFill = (demoEmail: string, demoPass: string) => {
     setEmail(demoEmail);
     setPassword(demoPass);
@@ -80,7 +80,6 @@ export default function LoginForm() {
       formData.append("email", demoEmail);
       formData.append("password", demoPass);
 
-      // সরাসরি action কল করা হচ্ছে
       const result = await loginAction({}, formData);
       
       if (result.success === false) {
@@ -114,6 +113,15 @@ export default function LoginForm() {
         transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
         className="relative w-full max-w-lg my-12"
       >
+        {/* ব্যাক বাটন কার্ডের ঠিক ওপরের কোণায় যুক্ত করা হয়েছে */}
+        <Link 
+          href="/" 
+          className="absolute -top-12 left-0 z-20 flex items-center gap-2 rounded-full border border-amber-500/30 bg-white/80 dark:bg-slate-900/80 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-md backdrop-blur-md transition-all hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400 cursor-pointer"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Home</span>
+        </Link>
+
         <div className="overflow-hidden rounded-[2.5rem] border border-amber-500/30 dark:border-amber-500/20 bg-white/80 dark:bg-slate-900/80 shadow-[0_20px_50px_rgba(245,158,11,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl">
           
           <div className="space-y-2 p-8 pb-4 text-center">
@@ -151,7 +159,7 @@ export default function LoginForm() {
                   variant="outline" 
                   size="sm"
                   disabled={isDemoPending}
-                  onClick={() => handleDemoFill("admin@rentnest.com", "password123")}
+                  onClick={() => handleDemoFill("admin@example.com", "password123")}
                   className="rounded-xl border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-600 font-semibold text-xs cursor-pointer"
                 >
                   <ShieldAlert className="w-3.5 h-3.5 mr-1 text-amber-500" /> Admin
