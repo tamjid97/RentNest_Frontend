@@ -1,11 +1,11 @@
 'use client'
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Eye, EyeOff, Mail, 
   Home, Lock, Sparkles, 
-  Loader2
+  Loader2, ShieldAlert, UserCheck, KeyRound
 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
@@ -37,6 +37,9 @@ const itemVariants: Variants = {
 export default function LoginForm() {
   const router = useRouter();
   
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isDemoPending, startDemoTransition] = useTransition();
 
   const [state, action, pending] = useActionState<LoginState, FormData>(
     loginAction, 
@@ -67,6 +70,37 @@ export default function LoginForm() {
     }
   }, [state, router]);
 
+  // 🌟 ডেমো ফাস্ট লগইন হ্যান্ডলার (ক্লিক করার সাথে সাথেই ফিল আপ হয়ে সাবমিট হবে)
+  const handleDemoFill = (demoEmail: string, demoPass: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+
+    startDemoTransition(async () => {
+      const formData = new FormData();
+      formData.append("email", demoEmail);
+      formData.append("password", demoPass);
+
+      // সরাসরি action কল করা হচ্ছে
+      const result = await loginAction({}, formData);
+      
+      if (result.success === false) {
+        toast.error(result.message || "Demo login failed");
+      } else if (result.success === true) {
+        toast.success("Demo login successful!");
+        setTimeout(() => {
+          if (result.role === "TENANT") {
+              router.push("/tenant"); 
+          } else if (result.role === "LANDLORD") {
+              router.push("/landlord"); 
+          } else if (result.role === "ADMIN") {
+              router.push("/admin");
+          } else {
+              router.push("/");
+          }
+        }, 800);
+      }
+    });
+  };
 
   return (
     <div className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden p-4 md:p-8 bg-slate-50 dark:bg-[#030712] transition-colors duration-300">
@@ -107,6 +141,44 @@ export default function LoginForm() {
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               Access your dashboard, properties, and rental preferences
             </p>
+
+            {/* 🌟 Demo Quick Login Buttons */}
+            <div className="pt-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">⚡ Quick Demo Login</p>
+              <div className="grid grid-cols-3 gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  disabled={isDemoPending}
+                  onClick={() => handleDemoFill("admin@rentnest.com", "password123")}
+                  className="rounded-xl border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-600 font-semibold text-xs cursor-pointer"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5 mr-1 text-amber-500" /> Admin
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  disabled={isDemoPending}
+                  onClick={() => handleDemoFill("landlord@rentnest.com", "password123")}
+                  className="rounded-xl border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-600 font-semibold text-xs cursor-pointer"
+                >
+                  <KeyRound className="w-3.5 h-3.5 mr-1 text-amber-500" /> Landlord
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  disabled={isDemoPending}
+                  onClick={() => handleDemoFill("tenant@rentnest.com", "password123")}
+                  className="rounded-xl border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-600 font-semibold text-xs cursor-pointer"
+                >
+                  <UserCheck className="w-3.5 h-3.5 mr-1 text-amber-500" /> Tenant
+                </Button>
+              </div>
+            </div>
+
           </div>
 
           <form action={action} className="p-8 pt-2">
@@ -126,6 +198,8 @@ export default function LoginForm() {
                     id="email"
                     name="email"
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="john@example.com"
                     required
                     className="pl-11 h-12 rounded-2xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 transition-all focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:border-amber-500"
@@ -145,6 +219,8 @@ export default function LoginForm() {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
                     className="pl-11 pr-12 h-12 rounded-2xl bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 transition-all focus-visible:ring-2 focus-visible:ring-amber-500/50 focus-visible:border-amber-500"
@@ -167,9 +243,9 @@ export default function LoginForm() {
                 <Button 
                   type="submit" 
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 font-extrabold text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:scale-[1.01] transition-all duration-300 active:scale-95 cursor-pointer"
-                  disabled={pending}
+                  disabled={pending || isDemoPending}
                 >
-                  {pending ? (
+                  {pending || isDemoPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Logging in...
