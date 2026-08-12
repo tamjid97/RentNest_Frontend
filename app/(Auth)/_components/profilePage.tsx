@@ -34,9 +34,11 @@ export default function ProfilePage() {
   const fetchProfile = useCallback(async () => {
     try {
       const res = await getProfileApi();
-      if (res?.success) {
-        // ব্যাকএন্ডের রেসপন্স ফরম্যাট অনুযায়ী সেফ হ্যান্ডলিং
-        const data = res.data?.profile || res.data || {};
+      console.log("API Response:", res);
+
+      // আপনার পোস্টম্যানের রেসপন্স অনুযায়ী ডাটা তোলার সঠিক পাথ
+      if (res?.success && res?.data?.profile) {
+        const data = res.data.profile;
         setProfile(data);
         setFormData({
           name: data.name || "",
@@ -47,6 +49,7 @@ export default function ProfilePage() {
         toast.error(res?.message || "Failed to load profile");
       }
     } catch (error) {
+      console.error("Error fetching profile:", error);
       toast.error("An error occurred while fetching profile.");
     } finally {
       setLoading(false);
@@ -66,15 +69,17 @@ export default function ProfilePage() {
     try {
       setUpdating(true);
       const res = await updateProfileApi(formData);
+      
       if (res?.success) {
         toast.success("Profile updated successfully!");
-        const updatedData = res.data?.profile || res.data || formData;
+        const updatedData = res?.data?.profile || res?.data || formData;
         setProfile((prev) => ({ ...prev, ...updatedData }));
         setIsEditing(false);
       } else {
         toast.error(res?.message || "Failed to update profile");
       }
     } catch (error) {
+      console.error("Error updating profile:", error);
       toast.error("Something went wrong during update.");
     } finally {
       setUpdating(false);
@@ -152,7 +157,6 @@ export default function ProfilePage() {
           {/* Profile Details Grid or Edit Form */}
           {!isEditing ? (
             <div className="mt-8 space-y-6">
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 
                 <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 p-5 transition-all hover:border-amber-500/40">
@@ -198,7 +202,6 @@ export default function ProfilePage() {
                 </div>
 
               </div>
-
             </div>
           ) : (
             <form onSubmit={handleUpdate} className="mt-8 space-y-6">

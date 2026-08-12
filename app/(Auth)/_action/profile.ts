@@ -1,40 +1,38 @@
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// প্রোফাইল ডাটা আনার ফাংশন
 export async function getProfileApi() {
-try {
-    const res = await fetch(`${BACKEND_URL}/Profile/me`, {
-    method: "GET",
-    headers: {
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/me`, { // অথবা আপনার ব্যাকএন্ড রাউট অনুযায়ী
+      method: "GET",
+      headers: {
         "Content-Type": "application/json",
-    },
-      credentials: "include", // কুকি বা টোকেন পাঠানোর জন্য অত্যন্ত জরুরি
+      },
+      credentials: "include",
     });
 
     const result = await res.json();
     return result;
-} catch (error) {
+  } catch (error) {
     console.error("Failed to fetch profile:", error);
     return { success: false, message: "Something went wrong" };
-}
+  }
 }
 
-// প্রোফাইল আপডেট করার ফাংশন
 export async function updateProfileApi(formData: { name?: string; phoneNumber?: string; profilePhoto?: string }) {
-try {
+  try {
     const res = await fetch(`${BACKEND_URL}/Profile/update-profile`, {
-    method: "PATCH",
-    headers: {
+      method: "PATCH",
+      headers: {
         "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-    credentials: "include",
+      },
+      body: JSON.stringify(formData),
+      credentials: "include",
     });
 
     const result = await res.json();
     return result;
-    } catch (error) {
+  } catch (error) {
     console.error("Failed to update profile:", error);
     return { success: false, message: "Something went wrong" };
-    }
+  }
 }
