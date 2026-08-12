@@ -1,150 +1,215 @@
-import React from 'react'
-import { User, Mail, Shield, Calendar, Sparkles, CheckCircle2, BadgeCheck } from 'lucide-react'
-import * as motion from 'framer-motion/client'
-import { getMe } from '@/components/service/getMe'
+"use client";
 
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
+import { User, Phone, Mail, ShieldCheck, Edit3, Save, X, Loader2 } from "lucide-react";
+import { getProfileApi, updateProfileApi } from "../_action/profile";
 
-export default async function ProfilePage() {
+export default function ProfilePage() {
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    profilePhoto: "",
+    role: "",
+    activeStatus: "",
+  });
 
-  const res = await getMe()
+  // ফর্মের জন্য আলাদা স্টেট
+  const [formData, setFormData] = useState({
+    name: "",
+    phoneNumber: "",
+    profilePhoto: "",
+  });
 
+  // 🌟 useCallback দিয়ে ফেচ ফাংশনটি র‍্যাপ করা হয়েছে যাতে রিক্রিয়েট না হয়
+  const fetchProfile = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getProfileApi();
+      if (res?.success) {
+        const data = res.data.profile;
+        setProfile(data);
+        setFormData({
+          name: data.name || "",
+          phoneNumber: data.phoneNumber || "",
+          profilePhoto: data.profilePhoto || "",
+        });
+      } else {
+        toast.error(res?.message || "Failed to load profile");
+      }
+    } catch (error) {
+      toast.error("An error occurred while fetching profile.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  if (!res.success || !res.data?.profile) {
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  // ইনপুট হ্যান্ডলার
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // আপডেট সাবমিট হ্যান্ডলার
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setUpdating(true);
+      const res = await updateProfileApi(formData);
+      if (res?.success) {
+        toast.success("Profile updated successfully!");
+        setProfile(res.data.profile);
+        setIsEditing(false);
+      } else {
+        toast.error(res?.message || "Failed to update profile");
+      }
+    } catch (error) {
+      toast.error("Something went wrong during update.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-[85vh] bg-slate-50 dark:bg-[#030712] flex items-center justify-center px-4">
-        <div className="text-center space-y-3">
-          <p className="text-base font-bold text-red-500">{res.message || "Failed to load profile."}</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Please log in to view your profile information.</p>
-        </div>
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-amber-500" />
       </div>
-    )
+    );
   }
 
-  const profile = res.data.profile
-
-
-  const formattedDate = new Date(profile.createdAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-
-  const initialLetter = profile.name ? profile.name.charAt(0).toUpperCase() : 'U'
-
   return (
-    <div className="min-h-[85vh] bg-slate-50 dark:bg-[#030712] py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-4xl px-4 py-10">
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:p-10 shadow-xl backdrop-blur-xl">
         
-        {/* --- Top Header & Banner Section --- */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-[2.5rem] border border-amber-500/30 dark:border-amber-500/20 bg-white dark:bg-slate-900 p-8 md:p-10 shadow-xl"
-        >
-          {/* Background Decorative Glow */}
-          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-72 h-72 bg-gradient-to-br from-amber-500/20 to-amber-600/5 rounded-full blur-3xl pointer-events-none"></div>
-          
-          <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
-            {/* Avatar */}
-            <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-300 text-slate-950 text-4xl font-black shadow-lg shadow-amber-500/30 ring-4 ring-amber-500/20 overflow-hidden">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-6 gap-6">
+          <div className="flex items-center gap-5">
+            <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-amber-500/30 bg-gradient-to-tr from-amber-500 to-amber-300 shadow-lg flex items-center justify-center text-slate-950 text-3xl font-bold">
               {profile.profilePhoto ? (
-                <img src={profile.profilePhoto} alt={profile.name} className="h-full w-full object-cover" />
+                <img src={profile.profilePhoto} alt="Profile" className="h-full w-full object-cover" />
               ) : (
-                initialLetter
+                <span>{profile.name ? profile.name.charAt(0).toUpperCase() : "U"}</span>
               )}
-              <span className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-950 text-amber-400 border-2 border-white dark:border-slate-900 shadow-md">
-                <Sparkles className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{profile.name || "User Name"}</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
+              <span className="mt-2 inline-block rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 capitalize">
+                {profile.role}
               </span>
             </div>
+          </div>
 
-            {/* User Metadata */}
-            <div className="text-center md:text-left space-y-2 flex-1">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  {profile.name}
-                </h1>
-                <span className="px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-extrabold uppercase tracking-widest shadow-sm">
-                  {profile.role}
-                </span>
+          {!isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-5 py-2.5 text-sm font-bold transition-all shadow-md cursor-pointer"
+            >
+              <Edit3 className="h-4 w-4" /> Edit Profile
+            </button>
+          )}
+        </div>
+
+        {/* View or Edit Form */}
+        {!isEditing ? (
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 p-4">
+              <User className="h-6 w-6 text-amber-500" />
+              <div>
+                <p className="text-xs text-slate-400">Full Name</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{profile.name || "Not provided"}</p>
               </div>
-              
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                User ID: <span className="text-slate-700 dark:text-slate-300 font-mono text-xs">{profile.id}</span>
-              </p>
-              
-              {/* Status Badge */}
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full mt-1">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                <span>Status: {profile.activeStatus}</span>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 p-4">
+              <Mail className="h-6 w-6 text-amber-500" />
+              <div>
+                <p className="text-xs text-slate-400">Email Address</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{profile.email}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 p-4">
+              <Phone className="h-6 w-6 text-amber-500" />
+              <div>
+                <p className="text-xs text-slate-400">Phone Number</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{profile.phoneNumber || "Not provided"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 p-4">
+              <ShieldCheck className="h-6 w-6 text-amber-500" />
+              <div>
+                <p className="text-xs text-slate-400">Account Status</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200 capitalize">{profile.activeStatus || "Active"}</p>
               </div>
             </div>
           </div>
-        </motion.div>
-
-        {/* --- Profile Details Cards Grid --- */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* Card 1: Personal & Contact Information */}
-          <div className="rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-7 shadow-sm">
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
-                <User className="h-5 w-5" />
-              </div>
-              Personal Information
-            </h3>
-            
-            <div className="space-y-5 text-sm">
-              <div className="flex items-center justify-between py-2.5 border-b border-slate-100 dark:border-slate-800/80">
-                <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2 font-medium">
-                  <Mail className="h-4 w-4 text-amber-500" /> Email Address
-                </span>
-                <span className="font-bold text-slate-900 dark:text-white">{profile.email}</span>
-              </div>
-              
-              <div className="flex items-center justify-between py-2.5">
-                <span className="text-slate-500 dark:text-slate-400 flex items-center gap-2 font-medium">
-                  <Calendar className="h-4 w-4 text-amber-500" /> Member Since
-                </span>
-                <span className="font-bold text-slate-900 dark:text-white">{formattedDate}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Security & Trust Overview */}
-          <div className="rounded-[2rem] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-7 shadow-sm flex flex-col justify-between">
+        ) : (
+          <form onSubmit={handleUpdate} className="mt-8 space-y-5">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
-                  <Shield className="h-5 w-5" />
-                </div>
-                Trust & Verification
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800">
-                  <BadgeCheck className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Verified Profile</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Your identity has been securely verified through RentNest marketplace safety protocols.</p>
-                  </div>
-                </div>
-              </div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-800 dark:text-slate-200 focus:border-amber-500 focus:outline-none"
+                required
+              />
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
-              <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-                To update your profile information, please contact platform support.
-              </p>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Phone Number</label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-800 dark:text-slate-200 focus:border-amber-500 focus:outline-none"
+              />
             </div>
-          </div>
-        </motion.div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Profile Photo URL</label>
+              <input
+                type="text"
+                name="profilePhoto"
+                value={formData.profilePhoto}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-800 dark:text-slate-200 focus:border-amber-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-700 px-5 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              >
+                <X className="h-4 w-4" /> Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={updating}
+                className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-6 py-2.5 text-sm font-bold shadow-md cursor-pointer disabled:opacity-50"
+              >
+                {updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Changes
+              </button>
+            </div>
+          </form>
+        )}
 
       </div>
     </div>
-  )
+  );
 }
