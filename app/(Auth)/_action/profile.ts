@@ -1,14 +1,14 @@
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// প্রোফাইল ডাটা আনার ফাংশন
+// প্রোফাইল ডাটা আনার ফাংশন (ব্যাকএন্ড রাউট: /api/Profile/me)
 export async function getProfileApi() {
   try {
-    const res = await fetch(`${BACKEND_URL}/me`, {
+    const res = await fetch(`${BACKEND_URL}/Profile/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // কুকি বা টোকেন পাঠানোর জন্য
+      credentials: "include", // কুকি বা টোকেন পাঠানোর জন্য অত্যন্ত জরুরি
     });
 
     const result = await res.json();
@@ -19,7 +19,46 @@ export async function getProfileApi() {
   }
 }
 
-// প্রোফাইল আপডেট করার ফাংশন
+// প্রোফাইল আপডেট করার ফাংশন (ব্যাকএন্ড রাউট: /api/Profile/update-profile)
+export async function updateProfileApi(formData: { name?: string; phoneNumber?: string; profilePhoto?: string }) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/Profile/update-profile`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+      credentials: "include",
+    });
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    console.error("Failed to update profile:", error);
+    return { success: false, message: "Something went wrong" };
+  }
+}const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+// প্রোফাইল ডাটা আনার ফাংশন (ব্যাকএন্ড রাউট: /api/Profile/me)
+export async function getProfileApi() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/Profile/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // কুকি বা টোকেন পাঠানোর জন্য অত্যন্ত জরুরি
+    });
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    console.error("Failed to fetch profile:", error);
+    return { success: false, message: "Something went wrong" };
+  }
+}
+
+// প্রোফাইল আপডেট করার ফাংশন (ব্যাকএন্ড রাউট: /api/Profile/update-profile)
 export async function updateProfileApi(formData: { name?: string; phoneNumber?: string; profilePhoto?: string }) {
   try {
     const res = await fetch(`${BACKEND_URL}/Profile/update-profile`, {
