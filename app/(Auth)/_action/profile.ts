@@ -19,10 +19,11 @@ export async function getProfileApi() {
   }
 }
 
-// প্রোফাইল আপডেট করার ফাংশন (আপনার ব্যাকএন্ডের সঠিক রাউট এখানে বসাবেন)
+// প্রোফাইল আপডেট করার সঠিক ফাংশন
 export async function updateProfileApi(formData: { name?: string; phoneNumber?: string; profilePhoto?: string }) {
   try {
-    const res = await fetch(`${BACKEND_URL}/auth/update-profile`, { // যদি রাউট অন্য কিছু হয় তবে এখানে পরিবর্তন করুন
+    // এখানে /auth/update-profile এর পরিবর্তে /Profile/update-profile দেওয়া হয়েছে
+    const res = await fetch(`${BACKEND_URL}/Profile/update-profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +33,7 @@ export async function updateProfileApi(formData: { name?: string; phoneNumber?: 
     });
 
     const result = await res.json();
-    console.log("Update API Raw Response:", result); // কনসোলে রেসপন্স দেখতে পাবেন
+    console.log("Update API Raw Response:", result);
     return result;
   } catch (error) {
     console.error("Failed to update profile catch error:", error);
