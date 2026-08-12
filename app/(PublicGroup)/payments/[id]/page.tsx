@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   CreditCard,
   Hash,
-  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSinglePaymentDetails } from "../../_action/paymentPageAction";
@@ -54,7 +53,6 @@ export default async function PaymentDetailsPage({
   const property = payment.rentalRequest?.property;
   const tenant = payment.rentalRequest?.client;
   const isPaid = payment.status === "PAID" || payment.status === "COMPLETED";
-  const propertyId = property?.id;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-4xl mx-auto">
@@ -199,35 +197,6 @@ export default async function PaymentDetailsPage({
             </div>
           </div>
         </div>
-
-        {/* 🌟 Write a Review Action Section (Only visible if payment is successful) */}
-        {isPaid && propertyId && (
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5 text-center sm:text-left">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mx-auto sm:mx-0">
-                <Star className="w-6 h-6 fill-amber-500" />
-              </div>
-              <div>
-                <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-slate-100">
-                  How was your stay?
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                  Your payment is verified. Share your feedback for{" "}
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    {property?.title}
-                  </span>
-                  .
-                </p>
-              </div>
-            </div>
-
-            <Link href={`/tenant/reviews/create?propertyId=${propertyId}`}>
-              <Button className="h-11 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/25 transition-all shrink-0">
-                <Star className="w-4 h-4 mr-1.5 fill-slate-950" /> Write a Review
-              </Button>
-            </Link>
-          </div>
-        )}
 
         {/* Footer Security Note */}
         <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center gap-3">

@@ -11,7 +11,6 @@ import { getProfileApi, updateProfileApi } from "../_action/profile";
 
 export default function ProfilePage() {
   const router = useRouter();
-  // ইনিশিয়ালি true রাখা হয়েছে, তাই শুরুতে আলাদা করে setLoading(true) দরকার নেই
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -34,10 +33,10 @@ export default function ProfilePage() {
 
   const fetchProfile = useCallback(async () => {
     try {
-      // 🌟 এখানে synchronous setLoading(1st line) সরিয়ে নেওয়া হয়েছে 
       const res = await getProfileApi();
       if (res?.success) {
-        const data = res.data.profile;
+        // ব্যাকএন্ডের রেসপন্স ফরম্যাট অনুযায়ী সেফ হ্যান্ডলিং
+        const data = res.data?.profile || res.data || {};
         setProfile(data);
         setFormData({
           name: data.name || "",
@@ -50,7 +49,6 @@ export default function ProfilePage() {
     } catch (error) {
       toast.error("An error occurred while fetching profile.");
     } finally {
-      // এটি অ্যাসিনক্রোনাস প্রমিজ রিজলভ হওয়ার পরে কাজ করবে, তাই কোনো সমস্যা নেই
       setLoading(false);
     }
   }, []);
@@ -70,7 +68,8 @@ export default function ProfilePage() {
       const res = await updateProfileApi(formData);
       if (res?.success) {
         toast.success("Profile updated successfully!");
-        setProfile(res.data.profile);
+        const updatedData = res.data?.profile || res.data || formData;
+        setProfile((prev) => ({ ...prev, ...updatedData }));
         setIsEditing(false);
       } else {
         toast.error(res?.message || "Failed to update profile");
@@ -131,7 +130,7 @@ export default function ProfilePage() {
                 
                 <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 capitalize">
-                    <ShieldCheck className="h-4 w-4" /> {profile.role}
+                    <ShieldCheck className="h-4 w-4" /> {profile.role || "User"}
                   </span>
                   <span className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold capitalize ${profile.activeStatus === "ACTIVE" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600"}`}>
                     <CheckCircle2 className="h-4 w-4" /> {profile.activeStatus || "Active"}
