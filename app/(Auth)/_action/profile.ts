@@ -1,6 +1,6 @@
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// প্রোফাইল ডাটা আনার ফাংশন
+// প্রোফাইল ডাটা আনার ফাংশন (/auth/me)
 export async function getProfileApi() {
   try {
     const res = await fetch(`${BACKEND_URL}/auth/me`, {
@@ -8,7 +8,7 @@ export async function getProfileApi() {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include",
+      credentials: "include", // কুকি পাঠানোর জন্য অত্যন্ত জরুরি
     });
 
     const result = await res.json();
@@ -19,11 +19,10 @@ export async function getProfileApi() {
   }
 }
 
-// প্রোফাইল আপডেট করার সঠিক ফাংশন
+// প্রোফাইল আপডেট করার ফাংশন (/auth/update-profile)
 export async function updateProfileApi(formData: { name?: string; phoneNumber?: string; profilePhoto?: string }) {
   try {
-    // এখানে /auth/update-profile এর পরিবর্তে /Profile/update-profile দেওয়া হয়েছে
-    const res = await fetch(`${BACKEND_URL}/Profile/update-profile`, {
+    const res = await fetch(`${BACKEND_URL}/auth/update-profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

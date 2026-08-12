@@ -36,7 +36,7 @@ export default function ProfilePage() {
       const res = await getProfileApi();
       console.log("API Response:", res);
 
-      // আপনার পোস্টম্যানের রেসপন্স অনুযায়ী ডাটা তোলার সঠিক পাথ
+      // ব্যাকএন্ডের রেসপন্স অনুযায়ী ডাটা তোলার পাথ
       if (res?.success && res?.data?.profile) {
         const data = res.data.profile;
         setProfile(data);
