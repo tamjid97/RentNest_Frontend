@@ -49,10 +49,9 @@ export const getProfileApi = async () => {
 
 export const getMe = getProfileApi;
 
-// ২. প্রোফাইল আপডেট করার সার্ভার অ্যাকশন
+// ২. প্রোফাইল আপডেট করার সার্ভার অ্যাকশন (ফোন নম্বর বাদ দেওয়া হয়েছে)
 export const updateProfileApi = async (formData: {
   name?: string;
-  phoneNumber?: string;
   profilePhoto?: string;
 }) => {
   try {
@@ -78,7 +77,7 @@ export const updateProfileApi = async (formData: {
     const result = await res.json();
 
     if (result.success) {
-      revalidateTag("my-profile", "max");
+      revalidateTag("my-profile","max");
     }
 
     return result;
