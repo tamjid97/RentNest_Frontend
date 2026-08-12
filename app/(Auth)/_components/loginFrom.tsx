@@ -39,7 +39,7 @@ export default function LoginForm() {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isDemoPending, startDemoTransition] = useTransition();
+  const [isDemoPending] = useTransition();
 
   const [state, action, pending] = useActionState<LoginState, FormData>(
     loginAction, 
@@ -70,35 +70,11 @@ export default function LoginForm() {
     }
   }, [state, router]);
 
-  // 🌟 ডেমো ফাস্ট লগইন হ্যান্ডলার
+  // 🌟 ডেমো ফাস্ট লগইন হ্যান্ডলার (ইনপুটে ডাটা বসিয়ে দিবে)
   const handleDemoFill = (demoEmail: string, demoPass: string) => {
     setEmail(demoEmail);
     setPassword(demoPass);
-
-    startDemoTransition(async () => {
-      const formData = new FormData();
-      formData.append("email", demoEmail);
-      formData.append("password", demoPass);
-
-      const result = await loginAction({}, formData);
-      
-      if (result.success === false) {
-        toast.error(result.message || "Demo login failed");
-      } else if (result.success === true) {
-        toast.success("Demo login successful!");
-        setTimeout(() => {
-          if (result.role === "TENANT") {
-              router.push("/tenant"); 
-          } else if (result.role === "LANDLORD") {
-              router.push("/landlord"); 
-          } else if (result.role === "ADMIN") {
-              router.push("/admin");
-          } else {
-              router.push("/");
-          }
-        }, 800);
-      }
-    });
+    toast.success("Demo credentials loaded! Click login.");
   };
 
   return (
@@ -113,7 +89,6 @@ export default function LoginForm() {
         transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
         className="relative w-full max-w-lg my-12"
       >
-        {/* ব্যাক বাটন কার্ডের ঠিক ওপরের কোণায় যুক্ত করা হয়েছে */}
         <Link 
           href="/" 
           className="absolute -top-12 left-0 z-20 flex items-center gap-2 rounded-full border border-amber-500/30 bg-white/80 dark:bg-slate-900/80 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-md backdrop-blur-md transition-all hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400 cursor-pointer"

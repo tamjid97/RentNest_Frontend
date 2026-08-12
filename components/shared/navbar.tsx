@@ -30,7 +30,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
-
 function UserDropdown({ user }: NavbarProps) {
   const userRole = user?.data?.profile?.role;
   const profilePhoto = user?.data?.profile?.profilePhoto; 
@@ -57,10 +56,10 @@ function UserDropdown({ user }: NavbarProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
+          type="button"
           className="group flex items-center gap-2 md:gap-3 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent dark:to-slate-900 p-1 md:pr-3 transition-all duration-300 hover:border-amber-400 focus:outline-none cursor-pointer"
           aria-label="User menu"
         >
-          
           <div className="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-extrabold shadow-md">
             {profilePhoto ? (
               <img
@@ -129,9 +128,9 @@ function UserDropdown({ user }: NavbarProps) {
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <Link href="/login">
-      <Button>Login</Button>
-    </Link>
+    <Button asChild>
+      <Link href="/login">Login</Link>
+    </Button>
   );
 }
 
@@ -193,6 +192,7 @@ export function Navbar({ user }: NavbarProps) {
           {/* --- Right Actions (Desktop) --- */}
           <div className="hidden md:flex items-center gap-4">
             <button
+              type="button"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400 transition-all duration-300 hover:border-amber-400 hover:scale-105 shadow-sm cursor-pointer"
               title="Toggle Theme"
@@ -201,13 +201,13 @@ export function Navbar({ user }: NavbarProps) {
               <Moon className="h-5 w-5 block dark:hidden text-slate-700" />
             </button>
 
-            {/* Profile Dropdown with user prop */}
             <UserDropdown user={user} />
           </div>
 
           {/* --- Mobile Actions (Toggle, Profile, Menu) --- */}
           <div className="flex md:hidden items-center gap-2">
             <button
+              type="button"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-amber-500 dark:text-amber-400 cursor-pointer"
             >
@@ -215,10 +215,10 @@ export function Navbar({ user }: NavbarProps) {
               <Moon className="h-4 w-4 block dark:hidden text-slate-700" />
             </button>
 
-            {/* Mobile Profile Avatar with user prop */}
             <UserDropdown user={user} />
 
             <button
+              type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 p-2 text-slate-700 dark:text-slate-300 transition-colors hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-amber-600 dark:hover:text-amber-400 cursor-pointer"
             >

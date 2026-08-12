@@ -1,41 +1,92 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+"use server";
 
-// প্রোফাইল ডাটা আনার ফাংশন (/auth/me)
-export async function getProfileApi() {
+import { cookies } from "next/headers";
+import { revalidateTag } from "next/cache";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://rent-nest-nu-hazel.vercel.app";
+
+// ১. প্রোফাইল ডাটা গেট করার সার্ভার অ্যাকশন
+export const getProfileApi = async () => {
   try {
-    const res = await fetch(`${BACKEND_URL}/auth/me`, {
-      method: "GET",
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value || null;
+
+    if (!accessToken) {
+      return {
+        success: false,
+        message: "user not logged!",
+      };
+    }
+
+    const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
       headers: {
-        "Content-Type": "application/json",
+        cookie: `accessToken=${accessToken}`,
       },
-      credentials: "include", // কুকি পাঠানোর জন্য অত্যন্ত জরুরি
+      cache: "force-cache",
+      next: {
+        revalidate: 60 * 60 * 24, // ২৪ ঘণ্টার জন্য ক্যাশ থাকবে
+        tags: ["my-profile"],
+      },
     });
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: "Failed to fetch profile",
+      };
+    }
 
     const result = await res.json();
     return result;
   } catch (error) {
-    console.error("Failed to fetch profile:", error);
-    return { success: false, message: "Something went wrong" };
+    console.error("Error fetching profile:", error);
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
   }
-}
+};
 
-// প্রোফাইল আপডেট করার ফাংশন (/auth/update-profile)
-export async function updateProfileApi(formData: { name?: string; phoneNumber?: string; profilePhoto?: string }) {
+export const getMe = getProfileApi;
+
+// ২. প্রোফাইল আপডেট করার সার্ভার অ্যাকশন
+export const updateProfileApi = async (formData: {
+  name?: string;
+  phoneNumber?: string;
+  profilePhoto?: string;
+}) => {
   try {
-    const res = await fetch(`${BACKEND_URL}/auth/update-profile`, {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value || null;
+
+    if (!accessToken) {
+      return {
+        success: false,
+        message: "user not logged!",
+      };
+    }
+
+    const res = await fetch(`${BACKEND_URL}/api/auth/update-profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        cookie: `accessToken=${accessToken}`,
       },
       body: JSON.stringify(formData),
-      credentials: "include",
     });
 
     const result = await res.json();
-    console.log("Update API Raw Response:", result);
+
+    if (result.success) {
+      revalidateTag("my-profile", "max");
+    }
+
     return result;
   } catch (error) {
-    console.error("Failed to update profile catch error:", error);
-    return { success: false, message: "Something went wrong" };
+    console.error("Error updating profile:", error);
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
   }
-}
+};
