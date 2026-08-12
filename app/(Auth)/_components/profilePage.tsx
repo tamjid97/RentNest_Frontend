@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { 
-  User, Phone, Mail, ShieldCheck, Edit3, Save, X, Loader2, 
+  User, Mail, ShieldCheck, Edit3, Save, X, Loader2, 
   ArrowLeft, Calendar, CheckCircle2, BadgeCheck 
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,6 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState({
     name: "",
     email: "",
-    phoneNumber: "",
     profilePhoto: "",
     role: "",
     activeStatus: "",
@@ -27,7 +26,6 @@ export default function ProfilePage() {
 
   const [formData, setFormData] = useState({
     name: "",
-    phoneNumber: "",
     profilePhoto: "",
   });
 
@@ -36,13 +34,11 @@ export default function ProfilePage() {
       const res = await getProfileApi();
       console.log("API Response:", res);
 
-      // ব্যাকএন্ডের রেসপন্স অনুযায়ী ডাটা তোলার পাথ
       if (res?.success && res?.data?.profile) {
         const data = res.data.profile;
         setProfile(data);
         setFormData({
           name: data.name || "",
-          phoneNumber: data.phoneNumber || "",
           profilePhoto: data.profilePhoto || "",
         });
       } else {
@@ -181,16 +177,6 @@ export default function ProfilePage() {
 
                 <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 p-5 transition-all hover:border-amber-500/40">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
-                    <Phone className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Phone Number</p>
-                    <p className="text-base font-bold text-slate-800 dark:text-slate-100 mt-0.5">{profile.phoneNumber || "Not provided"}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 p-5 transition-all hover:border-amber-500/40">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
                     <Calendar className="h-6 w-6" />
                   </div>
                   <div>
@@ -215,17 +201,6 @@ export default function ProfilePage() {
                     onChange={handleChange}
                     className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3.5 text-sm font-medium text-slate-800 dark:text-slate-200 focus:border-amber-500 focus:outline-none transition-colors"
                     required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Phone Number</label>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3.5 text-sm font-medium text-slate-800 dark:text-slate-200 focus:border-amber-500 focus:outline-none transition-colors"
                   />
                 </div>
 
